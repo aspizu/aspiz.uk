@@ -1,0 +1,88 @@
+<div id="carry-hover-card" role="tooltip" hidden>
+  <p data-card-title></p>
+</div>
+
+<script>
+  const card = document.querySelector<HTMLDivElement>("#carry-hover-card")!
+  const title = card.querySelector<HTMLElement>("[data-card-title]")!
+  let activeItem: SVGImageElement | null = null
+
+  for (const item of document.querySelectorAll<SVGImageElement>(
+    "[data-carry-title]",
+  )) {
+    let dismissed = false
+    item.addEventListener("dragstart", (event) => event.preventDefault())
+
+    for (const eventName of ["pointerenter", "pointermove", "focus"]) {
+      item.addEventListener(eventName, (event) => {
+        if (event.type === "focus" && !item.matches(":focus-visible")) return
+        if (event instanceof PointerEvent && event.pointerType === "touch")
+          return
+        if (event.type !== "pointermove") dismissed = false
+        if (dismissed) return
+
+        title.textContent = item.dataset.carryTitle!
+        activeItem = item
+        card.hidden = false
+
+        const bounds = item.getBoundingClientRect()
+        const x = event instanceof PointerEvent ? event.clientX : bounds.right
+        const y = event instanceof PointerEvent ? event.clientY : bounds.top
+        const width = card.offsetWidth
+        const height = card.offsetHeight
+        const left = x + 18 + width > innerWidth - 12 ? x - width - 18 : x + 18
+        const top =
+          y + 18 + height > innerHeight - 12 ? y - height - 18 : y + 18
+
+        card.style.left = `${Math.max(12, Math.min(left, innerWidth - width - 12))}px`
+        card.style.top = `${Math.max(12, Math.min(top, innerHeight - height - 12))}px`
+      })
+    }
+
+    for (const eventName of ["pointerleave", "blur"]) {
+      item.addEventListener(eventName, (event) => {
+        if (activeItem !== item) return
+        if (event.type === "blur" && item.matches(":hover")) return
+        card.hidden = true
+        activeItem = null
+      })
+    }
+
+    item.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        dismissed = true
+        if (activeItem === item) card.hidden = true
+      }
+    })
+  }
+
+  window.addEventListener("resize", () => {
+    card.hidden = true
+  })
+  window.addEventListener("blur", () => {
+    card.hidden = true
+  })
+</script>
+
+<style>
+  #carry-hover-card {
+    position: fixed;
+    z-index: 10;
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    padding: 5px 8px 3px;
+    background: #000;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  [data-card-title] {
+    font-size: 15px;
+    font-weight: 600;
+  }
+</style>

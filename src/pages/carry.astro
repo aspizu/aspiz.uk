@@ -1,0 +1,167 @@
+---
+import CarryHoverCard from "#components/CarryHoverCard.astro"
+import "@fontsource-variable/figtree"
+import "#styles/main.css"
+---
+
+<html lang="en" class="scheme-light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" href="/assets/favicon.png" />
+    <title>Carry</title>
+  </head>
+  <body class="bg-white font-sans">
+    <main>
+      <svg
+        viewBox="0 0 660 500"
+        preserveAspectRatio="xMidYMid meet"
+        role="group"
+        aria-label="Everyday carry arranged on a desk"
+      >
+        <image
+          href="/assets/carry-macbook-pro.png"
+          aria-label="Closed space-black 14-inch MacBook Pro"
+          data-carry-title="MacBook Pro M5"
+          tabindex="0"
+          aria-describedby="carry-hover-card"
+          role="img"
+          x="170"
+          y="75"
+          width="346.287961"
+          height="230.656311"
+          transform="rotate(-2 343.143980 190.328155)"
+        />
+        <image
+          href="/assets/carry-pixel-8a-porcelain.png"
+          aria-label="Google Pixel 8a in Porcelain, back facing up"
+          data-carry-title="Google Pixel 8a"
+          tabindex="0"
+          aria-describedby="carry-hover-card"
+          role="img"
+          x="45"
+          y="200"
+          width="90.114186"
+          height="168.393488"
+          transform="rotate(-12 90.057093 284.196744)"
+        />
+        <image
+          href="/assets/carry-casio-gbd-200.png"
+          aria-label="Blue Casio G-SHOCK GBD-200 with both straps laid flat"
+          data-carry-title="Casio G-SHOCK GBD-200"
+          tabindex="0"
+          aria-describedby="carry-hover-card"
+          role="img"
+          x="90"
+          y="-25"
+          width="55.052679"
+          height="209.282144"
+          transform="rotate(65 117.526340 79.641072)"
+        />
+        <image
+          href="/assets/carry-gamesir-g8-plus.png"
+          aria-label="Black GameSir G8+ controller without a phone"
+          data-carry-title="GameSir G8+"
+          tabindex="0"
+          aria-describedby="carry-hover-card"
+          role="img"
+          x="310"
+          y="350"
+          width="247.161990"
+          height="112.799745"
+          transform="rotate(-8 433.580995 406.399872)"
+        />
+        <image
+          href="/assets/carry-logitech-g304.png"
+          aria-label="White Logitech G304 mouse, viewed from above"
+          data-carry-title="Logitech G304"
+          tabindex="0"
+          aria-describedby="carry-hover-card"
+          role="img"
+          x="545"
+          y="185"
+          width="76.083333"
+          height="123.841666"
+          transform="rotate(9 583.041667 246.920833)"
+        />
+        <image
+          href="/assets/carry-earpods-usb-c.png"
+          aria-label="Apple EarPods USB-C with loosely coiled cable"
+          data-carry-title="Apple EarPods USB-C"
+          tabindex="0"
+          aria-describedby="carry-hover-card"
+          role="img"
+          x="180"
+          y="320"
+          width="85.529412"
+          height="157.058824"
+          transform="rotate(14 222.764706 398.529412)"
+        />
+      </svg>
+    </main>
+    <CarryHoverCard />
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  main {
+    position: fixed;
+    inset: 0;
+    height: 100dvh;
+    box-sizing: border-box;
+    padding: clamp(12px, 2vmin, 24px);
+    overflow: hidden;
+  }
+
+  /* Scale the complete scene once to fit both viewport axes. The image boxes
+     include shadow margins, with object widths calibrated to manufacturer
+     dimensions. Their heights retain the original raster aspect ratios.
+     EarPods size and the generated watch straps remain approximate. */
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    animation: desk-reveal 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes desk-reveal {
+    from {
+      opacity: 0;
+      filter: blur(12px);
+      transform: scale(0.94);
+    }
+
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    svg {
+      animation: none;
+    }
+  }
+
+  image {
+    -webkit-user-drag: none;
+    outline: none;
+    mix-blend-mode: multiply;
+  }
+
+  image:focus-visible {
+    outline: none;
+  }
+</style>
