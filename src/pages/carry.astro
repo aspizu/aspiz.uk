@@ -1,0 +1,410 @@
+---
+import "@fontsource-variable/figtree/index.css"
+import AmigaBoing from "#components/AmigaBoing.astro"
+import CarryScreen from "#components/CarryScreen.astro"
+import "#styles/main.css"
+
+const pageTitle = "Carry"
+---
+
+<link rel="icon" href="/assets/favicon.png" />
+<title>{pageTitle}</title>
+<main class="h-dvh overflow-hidden bg-white font-sans">
+  <div class="carry-scene relative size-full" data-carry-scene>
+    <canvas class="block size-full" aria-label="Carry 3D scene"></canvas>
+    <div class="pointer-events-none absolute inset-0" data-screen-layer>
+      <CarryScreen><AmigaBoing /></CarryScreen>
+    </div>
+  </div>
+  <div
+    class="loading-overlay fixed inset-0 z-50 grid place-items-center bg-white"
+    role="status"
+    aria-label="Loading models"
+    data-model-loading
+  >
+    <span
+      class="size-8 animate-spin rounded-full border-2 border-solid border-black/20 border-t-black motion-reduce:animate-none"
+      aria-hidden="true"></span>
+  </div>
+  <p
+    class="fixed bottom-4 left-4 text-sm text-red-700"
+    role="alert"
+    data-model-error
+    hidden
+  >
+    A model could not be loaded. Refresh to try again.
+  </p>
+</main>
+
+<style>
+  .carry-scene {
+    filter: blur(18px);
+    transition: filter 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .carry-scene[data-ready] {
+    filter: none;
+  }
+
+  .loading-overlay {
+    transition:
+      opacity 900ms ease,
+      visibility 0s 900ms;
+  }
+
+  .loading-overlay[data-ready] {
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carry-scene {
+      filter: none;
+      transition: none;
+    }
+
+    .loading-overlay {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import {
+    ACESFilmicToneMapping,
+    Box3,
+    Color,
+    DirectionalLight,
+    Fog,
+    Group,
+    Mesh,
+    MeshPhysicalMaterial,
+    MeshStandardMaterial,
+    PerspectiveCamera,
+    PlaneGeometry,
+    PMREMGenerator,
+    Scene,
+    SRGBColorSpace,
+    Texture,
+    Vector2,
+    Vector3,
+    VideoTexture,
+    VSMShadowMap,
+    WebGLRenderer,
+  } from "three"
+  import {RoomEnvironment} from "three/addons/environments/RoomEnvironment.js"
+  import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js"
+  import {EffectComposer} from "three/addons/postprocessing/EffectComposer.js"
+  import {OutputPass} from "three/addons/postprocessing/OutputPass.js"
+  import {RenderPass} from "three/addons/postprocessing/RenderPass.js"
+  import {SMAAPass} from "three/addons/postprocessing/SMAAPass.js"
+  import {UnrealBloomPass} from "three/addons/postprocessing/UnrealBloomPass.js"
+  import {
+    CSS3DObject,
+    CSS3DRenderer,
+  } from "three/addons/renderers/CSS3DRenderer.js"
+
+  const canvas = document.querySelector("canvas")!
+  const sceneElement =
+    document.querySelector<HTMLElement>("[data-carry-scene]")!
+  const screenElement = document.querySelector<HTMLElement>(
+    "[data-macbook-screen]",
+  )!
+  const screenRenderer = new CSS3DRenderer({
+    element: document.querySelector<HTMLElement>("[data-screen-layer]")!,
+  })
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+  let revealStartedAt: number | undefined
+  const scene = new Scene()
+  scene.background = new Color(0xffffff)
+  const fog = new Fog(0xffffff, 8.5, 17)
+  scene.fog = fog
+  const camera = new PerspectiveCamera(45, 1, 0.1, 100)
+  camera.up.set(0, 0, -1)
+  let cameraHeight = 9
+  camera.position.set(0, cameraHeight * (reducedMotion.matches ? 1 : 1.18), 0)
+  camera.lookAt(0, 0, 0)
+
+  const renderer = new WebGLRenderer({canvas, antialias: true})
+  renderer.toneMapping = ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = VSMShadowMap
+  const plane = new Mesh(
+    new PlaneGeometry(200, 200),
+    new MeshStandardMaterial({color: 0xffffff, roughness: 0.85}),
+  )
+  plane.rotation.x = -Math.PI / 2
+  plane.receiveShadow = true
+  scene.add(plane)
+
+  const light = new DirectionalLight(0xfff8f0, 2.5)
+  light.position.set(-3, 10, -2)
+  light.castShadow = true
+  light.shadow.mapSize.set(4096, 4096)
+  light.shadow.camera.left = -4
+  light.shadow.camera.right = 4
+  light.shadow.camera.top = 4
+  light.shadow.camera.bottom = -4
+  light.shadow.normalBias = 0.008
+  light.shadow.radius = 4
+  light.shadow.blurSamples = 8
+  scene.add(light)
+  const fill = new DirectionalLight(0xb9d9ff, 0.7)
+  fill.position.set(4, 5, 3)
+  scene.add(fill)
+  const environment = new RoomEnvironment()
+  const pmrem = new PMREMGenerator(renderer)
+  const environmentMap = pmrem.fromScene(environment)
+  scene.environment = environmentMap.texture
+  scene.environmentIntensity = 0.7
+  environment.dispose()
+  pmrem.dispose()
+
+  const composer = new EffectComposer(renderer)
+  composer.addPass(new RenderPass(scene, camera))
+  composer.addPass(new UnrealBloomPass(new Vector2(1, 1), 0.06, 0.3, 2))
+  composer.addPass(new OutputPass())
+  composer.addPass(new SMAAPass())
+
+  const pointer = new Vector2()
+  const smoothedPointer = new Vector2()
+  const pointerEvents = new AbortController()
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      if (event.pointerType !== "mouse") return
+      pointer.set(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        (event.clientY / window.innerHeight) * 2 - 1,
+      )
+    },
+    {signal: pointerEvents.signal},
+  )
+  document.documentElement.addEventListener(
+    "pointerleave",
+    () => {
+      pointer.set(0, 0)
+    },
+    {signal: pointerEvents.signal},
+  )
+  window.addEventListener(
+    "blur",
+    () => {
+      pointer.set(0, 0)
+    },
+    {signal: pointerEvents.signal},
+  )
+
+  const models = new Group()
+  scene.add(models)
+  const loader = new GLTFLoader()
+  let disposed = false
+  const loading = Promise.allSettled(
+    [
+      {
+        url: "/models/macbook-pro-14-m5.glb",
+        size: 3.12,
+        x: -0.9,
+        z: -0.3,
+        rotation: 0,
+      },
+      {
+        url: "/models/pixel-8a-porcelain.glb",
+        size: 1.52,
+        x: 1.25,
+        z: -0.85,
+        rotation: 0,
+      },
+      {
+        url: "/models/logitech-g304-white.glb",
+        size: 1.166,
+        x: 2.2,
+        z: -0.7,
+        rotation: 0,
+      },
+      {
+        url: "/models/gamesir-g8-plus-graphite.glb",
+        size: 2.3,
+        x: 2.05,
+        z: 0.95,
+        rotation: 0,
+      },
+      {
+        url: "/models/wired-earbuds.glb",
+        size: 3.659241630136967,
+        x: -1.4718406018636312,
+        z: 1.1921208135783672,
+        rotation: 0,
+      },
+    ].map(async ({url, size, x, z = 0, rotation}) => {
+      const {scene: model} = await loader.loadAsync(url)
+      model.rotation.x = rotation
+      const bounds = new Box3().setFromObject(model)
+      const dimensions = bounds.getSize(new Vector3())
+      const scale = size / Math.max(dimensions.x, dimensions.y, dimensions.z)
+      model.scale.setScalar(scale)
+      model.position
+        .copy(bounds.getCenter(new Vector3()))
+        .multiplyScalar(-scale)
+      model.position.x += x
+      model.position.z += z
+      model.position.y = -bounds.min.y * scale
+      model.traverse((object) => {
+        if (!(object instanceof Mesh)) return
+        object.castShadow = true
+        object.receiveShadow = true
+      })
+      if (url === "/models/macbook-pro-14-m5.glb") {
+        // This mesh is the illuminated display in the bundled MacBook model.
+        const display = model.getObjectByName("tfTbkkzhxqpKRgC")
+        if (!(display instanceof Mesh))
+          throw new Error("MacBook display mesh missing")
+        const video = screenElement.querySelector("video")
+        if (video) {
+          const texture = new VideoTexture(video)
+          texture.colorSpace = SRGBColorSpace
+          texture.flipY = false
+          const materials = Array.isArray(display.material)
+            ? display.material
+            : [display.material]
+          for (const material of materials) {
+            for (const value of Object.values(material)) {
+              if (value instanceof Texture) value.dispose()
+            }
+            material.dispose()
+          }
+          display.material = new MeshPhysicalMaterial({
+            color: 0x030303,
+            emissive: 0xffffff,
+            emissiveMap: texture,
+            emissiveIntensity: 0.85,
+            metalness: 0,
+            roughness: 0.28,
+            clearcoat: 1,
+            clearcoatRoughness: 0.12,
+            envMapIntensity: 0.65,
+          })
+        } else {
+          display.geometry.computeBoundingBox()
+          const displayBounds = display.geometry.boundingBox!
+          const displaySize = displayBounds.getSize(new Vector3())
+          const normal = new Vector3()
+            .fromBufferAttribute(display.geometry.getAttribute("normal"), 0)
+            .normalize()
+          const screen = new CSS3DObject(screenElement)
+          screen.name = "MacBook screen content"
+          screen.position
+            .copy(displayBounds.getCenter(new Vector3()))
+            .addScaledVector(normal, 0.002)
+          screen.quaternion.setFromUnitVectors(new Vector3(0, 0, 1), normal)
+          screen.scale.set(
+            displaySize.x / 1512,
+            Math.hypot(displaySize.y, displaySize.z) / 982,
+            displaySize.x / 1512,
+          )
+          display.add(screen)
+          screenElement.hidden = false
+        }
+      }
+      models.add(model)
+    }),
+  ).then((results) => {
+    if (disposed) return
+    const bounds = new Box3().setFromObject(models)
+    if (!bounds.isEmpty()) {
+      const center = bounds.getCenter(new Vector3())
+      models.position.set(-center.x, 0, -center.z)
+    }
+    composer.render()
+    screenRenderer.render(scene, camera)
+    revealStartedAt = performance.now()
+    sceneElement.setAttribute("data-ready", "")
+    const overlay = document.querySelector<HTMLElement>("[data-model-loading]")!
+    overlay.setAttribute("data-ready", "")
+    overlay.setAttribute("aria-hidden", "true")
+    const error = document.querySelector<HTMLElement>("[data-model-error]")!
+    error.hidden = results.every((result) => result.status === "fulfilled")
+    for (const result of results) {
+      if (result.status === "rejected") console.error(result.reason)
+    }
+  })
+
+  const resizeObserver = new ResizeObserver(() => {
+    const {width, height} = canvas.getBoundingClientRect()
+    if (!width || !height) return
+
+    camera.aspect = width / height
+    camera.updateProjectionMatrix()
+    cameraHeight = 9 * Math.max(1, 1 / camera.aspect)
+    const pixelRatio = window.devicePixelRatio
+    renderer.setPixelRatio(pixelRatio)
+    renderer.setSize(width, height, false)
+    composer.setPixelRatio(pixelRatio)
+    composer.setSize(width, height)
+    screenRenderer.setSize(width, height)
+  })
+  resizeObserver.observe(canvas)
+
+  let previousFrame = 0
+  renderer.setAnimationLoop((time) => {
+    const delta = Math.min((time - previousFrame) / 1000, 0.1)
+    previousFrame = time
+    if (reducedMotion.matches) {
+      smoothedPointer.set(0, 0)
+    } else {
+      smoothedPointer.lerp(pointer, 1 - Math.exp(-5 * delta))
+    }
+    const revealProgress = reducedMotion.matches
+      ? 1
+      : revealStartedAt === undefined
+        ? 0
+        : Math.min(Math.max((time - revealStartedAt) / 1600, 0), 1)
+    const height = cameraHeight * (1 + 0.18 * (1 - revealProgress) ** 3)
+    camera.position.set(
+      smoothedPointer.x * 0.45,
+      height,
+      smoothedPointer.y * 0.45,
+    )
+    fog.near = height - 0.5
+    fog.far = height + 8
+    camera.lookAt(smoothedPointer.x * 0.1, 0, smoothedPointer.y * 0.1)
+    composer.render(delta)
+    screenRenderer.render(scene, camera)
+  })
+
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => {
+      disposed = true
+      resizeObserver.disconnect()
+      pointerEvents.abort()
+      renderer.setAnimationLoop(null)
+      void loading.then(() => {
+        models.traverse((object) => {
+          if (object instanceof CSS3DObject) object.element.remove()
+          if (!(object instanceof Mesh)) return
+          object.geometry.dispose()
+          const materials = Array.isArray(object.material)
+            ? object.material
+            : [object.material]
+          for (const material of materials) {
+            for (const value of Object.values(material)) {
+              if (value instanceof Texture) value.dispose()
+            }
+            material.dispose()
+          }
+        })
+      })
+      environmentMap.dispose()
+      for (const pass of composer.passes) pass.dispose()
+      composer.dispose()
+      plane.geometry.dispose()
+      plane.material.dispose()
+      light.dispose()
+      fill.dispose()
+      renderer.dispose()
+      screenRenderer.domElement.replaceChildren()
+    })
+  }
+</script>

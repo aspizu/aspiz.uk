@@ -1,0 +1,41 @@
+<video
+  class="block size-full bg-black object-contain"
+  src="/videos/amiga-boing.mp4"
+  poster="/videos/amiga-boing-poster.webp"
+  aria-label="Original Amiga Boing Ball demo by Dale Luck and RJ Mical"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"
+  disablepictureinpicture
+  data-amiga-boing></video>
+
+<script>
+  const video = document.querySelector<HTMLVideoElement>("[data-amiga-boing]")!
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+  const events = new AbortController()
+
+  const updatePlayback = () => {
+    if (document.hidden || reducedMotion.matches) {
+      video.pause()
+    } else {
+      void video.play().catch(() => {})
+    }
+  }
+
+  document.addEventListener("visibilitychange", updatePlayback, {
+    signal: events.signal,
+  })
+  reducedMotion.addEventListener("change", updatePlayback, {
+    signal: events.signal,
+  })
+  updatePlayback()
+
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => {
+      events.abort()
+      video.pause()
+    })
+  }
+</script>
