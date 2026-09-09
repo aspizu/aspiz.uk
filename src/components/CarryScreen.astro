@@ -1,0 +1,18 @@
+<div class="macbook-screen" data-macbook-screen hidden>
+  <!-- Add screen content here, or pass HTML into this component's slot. -->
+  <slot />
+</div>
+
+<style>
+  .macbook-screen {
+    width: 1512px;
+    height: 982px;
+    overflow: hidden;
+    background: white;
+    color: black;
+    backface-visibility: hidden;
+    clip-path: path(
+      "M 38 0 H 657 Q 663 0 663 5 V 20 Q 663 32 678 32 H 834 Q 849 32 849 20 V 5 Q 849 0 856 0 H 1474 Q 1512 0 1512 32 V 982 H 0 V 32 Q 0 0 38 0 Z"
+    );
+  }
+</style>
