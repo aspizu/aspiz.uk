@@ -1,5 +1,6 @@
 ---
 import "@fontsource-variable/figtree/index.css"
+import AmigaBoing from "#components/AmigaBoing.astro"
 import CarryScreen from "#components/CarryScreen.astro"
 import "#styles/main.css"
 
@@ -12,7 +13,7 @@ const pageTitle = "Carry"
   <div class="carry-scene relative size-full" data-carry-scene>
     <canvas class="block size-full" aria-label="Carry 3D scene"></canvas>
     <div class="pointer-events-none absolute inset-0" data-screen-layer>
-      <CarryScreen />
+      <CarryScreen><AmigaBoing /></CarryScreen>
     </div>
   </div>
   <div

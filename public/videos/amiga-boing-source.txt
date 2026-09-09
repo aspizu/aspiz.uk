@@ -1,0 +1,15 @@
+Boing — original Amiga demo by Dale Luck and RJ Mical (1984).
+
+Recording: Dale Luck & RJ Mical - Boing - Amiga Demo (50 FPS)
+https://www.youtube.com/watch?v=ssUleIBKOW8
+Linked by the demo's preservation entries:
+https://www.pouet.net/prod.php?which=27096
+https://demozoo.org/productions/151545/
+
+Local display asset: silent 14.84-second excerpt, starting at 00:15.780.
+Original capture borders cropped to 812 x 646 at (248, 42), resized to
+640 x 510, pillarboxed to 786 x 510 for the MacBook display, and encoded
+as H.264 at 50 fps. The graphics and motion come
+from the recording, not a recreation. The poster is its first frame.
+
+Original demo and recording retain their respective authors' rights.
