@@ -1,7 +1,0 @@
-Airpods by helaersmorgane
-Source: https://sketchfab.com/3d-models/airpods-73fc04bcbe504cda8af68caf0d4c727b
-Author: https://sketchfab.com/helaersmorgane
-License: Creative Commons Attribution 4.0 International
-https://creativecommons.org/licenses/by/4.0/
-
-wired-earbuds.glb is a derivative of the supplied airpods.glb: duplicate geometry removed, mirrored triangle winding corrected, earbuds independently rotated and positioned, cables and headphone plug added.
