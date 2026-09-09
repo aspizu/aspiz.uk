@@ -103,6 +103,28 @@ import "#styles/main.css"
   </body>
 </html>
 
+<script>
+  const desk = document.querySelector("main")!
+  const scene = desk.querySelector("svg")!
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
+
+  desk.addEventListener("pointermove", (event) => {
+    if (event.pointerType !== "mouse" || reducedMotion.matches) return
+    const bounds = desk.getBoundingClientRect()
+    const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 16
+    const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 16
+    scene.style.translate = `${x}px ${y}px`
+  })
+
+  desk.addEventListener("pointerleave", () => {
+    scene.style.translate = "0px 0px"
+  })
+
+  reducedMotion.addEventListener("change", () => {
+    scene.style.translate = "0px 0px"
+  })
+</script>
+
 <style>
   html,
   body {
@@ -132,26 +154,29 @@ import "#styles/main.css"
     display: block;
     width: 100%;
     height: 100%;
-    animation: desk-reveal 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: desk-reveal 1400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform: scale(1.08);
+    transition: translate 180ms ease-out;
   }
 
   @keyframes desk-reveal {
     from {
       opacity: 0;
       filter: blur(12px);
-      transform: scale(0.94);
+      transform: scale(1.8);
     }
 
     to {
       opacity: 1;
       filter: blur(0);
-      transform: scale(1);
+      transform: scale(1.08);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     svg {
       animation: none;
+      transition: none;
     }
   }
 
