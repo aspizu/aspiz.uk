@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "deploy": "pnpm build && pnpm exec wrangler deploy",
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
     "typecheck": "ASTRO_TELEMETRY_DISABLED=1 astro sync && tsc --noEmit",
