@@ -1,0 +1,26 @@
+---
+interface Props {
+  destination: string
+}
+
+const {destination} = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting…</title>
+    <script define:vars={{destination}}>
+      const url = new URL(destination, location.origin)
+      url.search = location.search
+      url.hash = location.hash
+      location.replace(url.href)
+    </script>
+    <meta http-equiv="refresh" content={`0; url=${destination}`} />
+  </head>
+  <body>
+    <p>Redirecting to <a href={destination}>{destination}</a>…</p>
+  </body>
+</html>
