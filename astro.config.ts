@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite"
 import {defineConfig} from "astro/config"
 
 import remarkWikiWords from "./src/utils/remark-wiki-words"
+import {youtubeThumbnailCache} from "./src/utils/youtube-thumbnail"
 
 export default defineConfig({
   site: "https://aspiz.uk",
@@ -17,7 +18,7 @@ export default defineConfig({
     }),
     syntaxHighlight: false,
   },
-  integrations: [mdx()],
+  integrations: [mdx(), youtubeThumbnailCache],
   devToolbar: {
     enabled: false,
   },
