@@ -6,15 +6,106 @@ _____    ____________ |__|_______
 &lt;____  /____  &gt;|   __/|__/_____ \
      \/     \/ |__|            \/.uk</a></pre>
 
-<style>
-  .logo,
-  .logo:visited {
-    color: var(--color-c64-light-blue);
-    text-decoration-line: none;
-  }
+<script>
+  await document.fonts.ready
 
-  .logo:hover {
-    color: var(--color-c64-yellow);
+  for (const logo of document.querySelectorAll<HTMLElement>(".logo")) {
+    const characters = Array.from(logo.textContent ?? "", (character) => {
+      const element = document.createElement("span")
+      element.textContent = character
+      return {element, x: 0, y: 0, originalX: 0, originalY: 0, vx: 0, vy: 0}
+    })
+
+    logo.replaceChildren(...characters.map(({element}) => element))
+    const characterWidth =
+      characters[0]?.element.getBoundingClientRect().width ?? 0
+    const lineHeight = Number.parseFloat(getComputedStyle(logo).lineHeight)
+    let column = 0
+    let row = 0
+
+    for (const character of characters) {
+      character.x = column * characterWidth
+      character.y = row * lineHeight
+      character.originalX = character.x
+      character.originalY = character.y
+
+      if (character.element.textContent === "\n") {
+        column = 0
+        row++
+      } else {
+        column++
+      }
+    }
+
+    logo.style.height = `${(row + 1) * lineHeight}px`
+
+    for (const {element} of characters) {
+      element.style.position = "absolute"
+      element.style.left = "0"
+      element.style.top = "0"
+    }
+
+    const mouse = {x: 0, y: 0, active: false}
+
+    logo.addEventListener("pointermove", (event) => {
+      mouse.x = event.clientX
+      mouse.y = event.clientY
+      mouse.active = true
+    })
+
+    logo.addEventListener("pointerleave", () => {
+      mouse.active = false
+    })
+
+    const springStrength = 256
+    const velocityDamping = 0.8
+    const mouseRadius = 256
+    const mouseStrength = 64
+    let previousTime = performance.now()
+
+    const render = (time: number) => {
+      if (!logo.isConnected) return
+
+      const deltaTime = Math.min((time - previousTime) / 1000, 0.05)
+      const frameScale = deltaTime * 60
+      const damping = velocityDamping ** frameScale
+      previousTime = time
+      const bounds = logo.getBoundingClientRect()
+
+      for (const character of characters) {
+        character.vx +=
+          (character.originalX - character.x) * springStrength * deltaTime
+        character.vy +=
+          (character.originalY - character.y) * springStrength * deltaTime
+        if (mouse.active) {
+          const dx = character.x - (mouse.x - bounds.left)
+          const dy = character.y - (mouse.y - bounds.top)
+          const distance = Math.hypot(dx, dy)
+          if (distance > 0 && distance < mouseRadius) {
+            const strength = mouseStrength * (1 - distance / mouseRadius) ** 2
+            character.vx += (dx / distance) * strength * frameScale
+            character.vy += (dy / distance) * strength * frameScale
+          }
+        }
+        character.vx *= damping
+        character.vy *= damping
+        character.x += character.vx * deltaTime
+        character.y += character.vy * deltaTime
+        character.element.style.transform = `translate(${character.x}px, ${character.y}px)`
+      }
+
+      requestAnimationFrame(render)
+    }
+
+    render(previousTime)
+  }
+</script>
+
+<style>
+  .logo {
+    position: relative;
+    display: block;
+    color: var(--color-c64-light-blue);
     text-decoration-line: none;
   }
 </style>
