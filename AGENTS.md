@@ -4,3 +4,4 @@ Avoid splitting code into private functions. Inline and specialize behavior wher
 only create abstractions for fundamentals, prefer frameworks and libraries over creating your own abstractions.
 Avoid splitting code into private functions, always try to inline and thus specialize everything.
 Each product feature should be in a separate file.
+In copy, don't use fancy quotes, emdashes, rule of three, or non-ASCII characters unless specifically requested to.
