@@ -1,0 +1,72 @@
+---
+import quotes from "#content/quotes.json"
+import {z} from "astro/zod"
+
+const quoteSchema = z.object({
+  quote: z.string(),
+  author: z.string(),
+  source: z.string(),
+  sourceUrl: z.url().optional(),
+})
+const dailyQuotes = z.array(quoteSchema).nonempty().parse(quotes)
+const quote = dailyQuotes[0]
+---
+
+<figure data-daily-quote>
+  <blockquote>
+    <p class="m-0" data-quote-text>{quote.quote}</p>
+    <footer class="mt-2 text-right">
+      <span data-quote-author>{quote.author}</span>
+      <span data-quote-source-citation class:list={{hidden: !quote.sourceUrl}}
+        >,{" "}<cite>
+          <a data-quote-source href={quote.sourceUrl}>{quote.source}</a>
+        </cite></span
+      >
+    </footer>
+  </blockquote>
+</figure>
+
+<script>
+  import quotes from "#content/quotes.json"
+  import {z} from "astro/zod"
+
+  const quoteSchema = z.object({
+    quote: z.string(),
+    author: z.string(),
+    source: z.string(),
+    sourceUrl: z.url().optional(),
+  })
+  const dailyQuotes = z.array(quoteSchema).nonempty().parse(quotes)
+  const element = document.querySelector<HTMLElement>("[data-daily-quote]")
+  const text = element?.querySelector<HTMLElement>("[data-quote-text]")
+  const author = element?.querySelector<HTMLElement>("[data-quote-author]")
+  const citation = element?.querySelector<HTMLElement>(
+    "[data-quote-source-citation]",
+  )
+  const source = element?.querySelector<HTMLAnchorElement>(
+    "[data-quote-source]",
+  )
+  const today = new Date()
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  let hash = 2166136261
+
+  for (const character of date) {
+    hash ^= character.charCodeAt(0)
+    hash = Math.imul(hash, 16777619)
+  }
+
+  const quote = dailyQuotes[(hash >>> 0) % dailyQuotes.length]
+
+  if (text && author && citation && source) {
+    text.textContent = quote.quote
+    author.textContent = quote.author
+    citation.classList.toggle("hidden", !quote.sourceUrl)
+
+    if (quote.sourceUrl) {
+      source.textContent = quote.source
+      source.href = quote.sourceUrl
+    } else {
+      source.removeAttribute("href")
+    }
+  }
+</script>

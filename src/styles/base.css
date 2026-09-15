@@ -111,7 +111,7 @@
   }
 
   blockquote {
-    @apply mx-0 border-l-4 border-c64-purple pl-4 text-c64-light-grey;
+    @apply mr-12 ml-0 border-l-4 border-c64-purple pl-4 text-c64-light-grey;
   }
 
   pre:has(> code) {
