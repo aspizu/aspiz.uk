@@ -5,26 +5,94 @@ interface Props {
   title: string
 }
 
+const bayer = [
+  [0, 32, 8, 40, 2, 34, 10, 42],
+  [48, 16, 56, 24, 50, 18, 58, 26],
+  [12, 44, 4, 36, 14, 46, 6, 38],
+  [60, 28, 52, 20, 62, 30, 54, 22],
+  [3, 35, 11, 43, 1, 33, 9, 41],
+  [51, 19, 59, 27, 49, 17, 57, 25],
+  [15, 47, 7, 39, 13, 45, 5, 37],
+  [63, 31, 55, 23, 61, 29, 53, 21],
+].flat()
+const darkColors = [
+  "var(--color-c64-purple)",
+  "var(--color-c64-red)",
+  "var(--color-c64-brown)",
+]
+const lightColors = [
+  "var(--color-c64-cyan)",
+  "var(--color-c64-yellow)",
+  "var(--color-c64-light-green)",
+]
+const corruptionProbability = 0.9
+const cellsPerModule = 8
+const cellSize = 1
+
+function createQrMatrix(url: string): boolean[][] {
+  const {modules} = QRCode.create(url, {errorCorrectionLevel: "M"})
+  const matrix: boolean[][] = []
+  for (let y = 0; y < modules.size; y++) {
+    const row: boolean[] = []
+    for (let x = 0; x < modules.size; x++) {
+      row.push(Boolean(modules.get(y, x)))
+    }
+    matrix.push(row)
+  }
+  return matrix
+}
+
+function pickColor(palette: string[]): string {
+  return palette[Math.floor(Math.random() * palette.length)]!
+}
+
+function createDitherPattern(isOn: boolean): string[] {
+  const solid = Math.random() < corruptionProbability
+  const ditherLevel = solid
+    ? 0
+    : 1 + Math.floor(Math.random() * (bayer.length / 2 - 1))
+  const darkPixels = isOn ? ditherLevel : bayer.length - ditherLevel
+  const darkColor = solid ? "var(--color-c64-blue)" : pickColor(darkColors)
+  const lightColor = solid ? "var(--color-c64-white)" : pickColor(lightColors)
+  return bayer.map((threshold) =>
+    threshold < darkPixels ? darkColor : lightColor,
+  )
+}
+
 const {title} = Astro.props
 const pathname = Astro.url.pathname.replace(/\/$/, "") || "/"
 const pageUrl = new URL(pathname, Astro.site).href
-const qrCode = await QRCode.toString(pageUrl, {
-  type: "svg",
-  errorCorrectionLevel: "M",
-  margin: 0,
-  color: {
-    dark: "#6c6c6c",
-    light: "#ffffff",
-  },
-})
+const qrCode = createQrMatrix(pageUrl)
+const size = qrCode.length
+const renderedSize = size * cellsPerModule * cellSize
+const ditheredQrCode = qrCode.map((row) => row.map(createDitherPattern))
 ---
 
 <footer class="mt-8 mb-16 py-4">
-  <div
-    class="[&_path:first-child]:fill-c64-blue [&_path:last-child]:stroke-c64-light-grey [&_svg]:block [&_svg]:size-24"
+  <svg
+    class="block fill-c64-light-grey"
+    width={renderedSize}
+    height={renderedSize}
+    viewBox={`0 0 ${size} ${size}`}
+    shape-rendering="crispEdges"
     role="img"
     aria-label={`QR code for ${title}`}
   >
-    <Fragment set:html={qrCode} />
-  </div>
+    <rect class="fill-c64-white" width={size} height={size}></rect>
+    {
+      ditheredQrCode.map((row, y) =>
+        row.map((pattern, x) =>
+          pattern.map((color, i) => (
+            <rect
+              x={x + (i % cellsPerModule) / cellsPerModule}
+              y={y + Math.floor(i / cellsPerModule) / cellsPerModule}
+              width={1 / cellsPerModule}
+              height={1 / cellsPerModule}
+              fill={color}
+            />
+          )),
+        ),
+      )
+    }
+  </svg>
 </footer>
