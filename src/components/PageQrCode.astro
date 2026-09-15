@@ -1,5 +1,7 @@
 ---
 import QRCode from "qrcode"
+import sharp from "sharp"
+import theme from "#styles/theme.css?raw"
 
 interface Props {
   title: string
@@ -62,6 +64,33 @@ function createDitherPattern(isOn: boolean): string[] {
   )
 }
 
+async function renderQrPng(patterns: string[][][]): Promise<Buffer> {
+  const colors = new Map(
+    [...theme.matchAll(/(--color-c64-[\w-]+):\s*#([\da-f]{6});/gi)].map(
+      ([, name, hex]) => [`var(${name})`, Buffer.from(`${hex}ff`, "hex")],
+    ),
+  )
+  const size = patterns.length * cellsPerModule
+  const pixels = Buffer.alloc(size * size * 4)
+
+  for (const [y, row] of patterns.entries()) {
+    for (const [x, pattern] of row.entries()) {
+      for (const [i, color] of pattern.entries()) {
+        const rgba = colors.get(color)
+        if (!rgba) throw new Error(`Unknown QR color: ${color}`)
+        const pixelX = x * cellsPerModule + (i % cellsPerModule)
+        const pixelY = y * cellsPerModule + Math.floor(i / cellsPerModule)
+        pixels.set(rgba, (pixelY * size + pixelX) * 4)
+      }
+    }
+  }
+
+  return sharp(pixels, {raw: {width: size, height: size, channels: 4}})
+    .resize(size * cellSize, size * cellSize, {kernel: "nearest"})
+    .png()
+    .toBuffer()
+}
+
 const {title} = Astro.props
 const pathname = Astro.url.pathname.replace(/\/$/, "") || "/"
 const pageUrl = new URL(pathname, Astro.site).href
@@ -69,32 +98,15 @@ const qrCode = createQrMatrix(pageUrl)
 const size = qrCode.length
 const renderedSize = size * cellsPerModule * cellSize
 const ditheredQrCode = qrCode.map((row) => row.map(createDitherPattern))
+const png = await renderQrPng(ditheredQrCode)
 ---
 
 <footer class="mt-8 mb-16 py-4">
-  <svg
-    class="block fill-c64-light-grey"
+  <img
+    class="block [image-rendering:pixelated]"
+    src={`data:image/png;base64,${png.toString("base64")}`}
     width={renderedSize}
     height={renderedSize}
-    viewBox={`0 0 ${size} ${size}`}
-    shape-rendering="crispEdges"
-    role="img"
-    aria-label={`QR code for ${title}`}
-  >
-    {
-      ditheredQrCode.map((row, y) =>
-        row.map((pattern, x) =>
-          pattern.map((color, i) => (
-            <rect
-              x={x + (i % cellsPerModule) / cellsPerModule}
-              y={y + Math.floor(i / cellsPerModule) / cellsPerModule}
-              width={1 / cellsPerModule}
-              height={1 / cellsPerModule}
-              fill={color}
-            />
-          )),
-        ),
-      )
-    }
-  </svg>
+    alt={`QR code for ${title}`}
+  />
 </footer>
