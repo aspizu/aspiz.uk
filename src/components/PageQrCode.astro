@@ -25,7 +25,8 @@ const lightColors = [
   "var(--color-c64-yellow)",
   "var(--color-c64-light-green)",
 ]
-const corruptionProbability = 0.9
+const ditherProbability = 0.25
+const colorProbability = 0.1
 const cellsPerModule = 8
 const cellSize = 1
 
@@ -47,15 +48,17 @@ function pickColor(palette: string[]): string {
 }
 
 function createDitherPattern(isOn: boolean): string[] {
-  const solid = Math.random() < corruptionProbability
-  const ditherLevel = solid
-    ? 0
-    : 1 + Math.floor(Math.random() * (bayer.length / 2 - 1))
-  const darkPixels = isOn ? ditherLevel : bayer.length - ditherLevel
-  const darkColor = solid ? "var(--color-c64-blue)" : pickColor(darkColors)
-  const lightColor = solid ? "var(--color-c64-white)" : pickColor(lightColors)
+  if (!isOn) return []
+
+  const dithered = Math.random() < ditherProbability
+  const colored = Math.random() < colorProbability
+  const ditherLevel = dithered
+    ? 1 + Math.floor(Math.random() * (bayer.length / 2 - 1))
+    : 0
+  const darkColor = colored ? pickColor(darkColors) : "var(--color-c64-blue)"
+  const lightColor = colored ? pickColor(lightColors) : "var(--color-c64-white)"
   return bayer.map((threshold) =>
-    threshold < darkPixels ? darkColor : lightColor,
+    threshold < ditherLevel ? darkColor : lightColor,
   )
 }
 
@@ -78,7 +81,6 @@ const ditheredQrCode = qrCode.map((row) => row.map(createDitherPattern))
     role="img"
     aria-label={`QR code for ${title}`}
   >
-    <rect class="fill-c64-white" width={size} height={size}></rect>
     {
       ditheredQrCode.map((row, y) =>
         row.map((pattern, x) =>
