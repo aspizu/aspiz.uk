@@ -5,24 +5,52 @@ import {Image} from "astro:assets"
 ---
 
 <div class="mt-4 flex flex-wrap gap-2">
-  <a
-    class="block w-fit no-underline hover:no-underline"
-    href="https://threadlocked.xyz/"
-  >
-    <Image
-      class="block [image-rendering:pixelated]"
-      src={threadLockedButton}
-      alt="Thread locked"
-    />
-  </a>
-  <a
-    class="block w-fit no-underline hover:no-underline"
-    href="https://blr.indiewebclub.org/"
-  >
-    <Image
-      class="block [image-rendering:pixelated]"
-      src={indieWebClubButton}
-      alt="Indie Web Club Bangalore"
-    />
-  </a>
+  <nav class="flex items-center" aria-label="Threadlocked webring">
+    <a
+      class="flex h-[31px] w-4 items-center justify-center bg-c64-dark-grey leading-none text-c64-white no-underline hover:no-underline active:translate-y-0.5"
+      href="https://ring.seggs.lol/redirect?from=aspizu&dir=prev"
+      aria-label="Previous site in the Threadlocked webring"
+      ><span class="relative -top-px left-px" aria-hidden="true">&lt;</span></a
+    >
+    <a
+      class="block w-fit no-underline hover:no-underline"
+      href="https://threadlocked.xyz/"
+    >
+      <Image
+        class="block [image-rendering:pixelated]"
+        src={threadLockedButton}
+        alt="Thread locked"
+      />
+    </a>
+    <a
+      class="flex h-[31px] w-4 items-center justify-center bg-c64-dark-grey leading-none text-c64-white no-underline hover:no-underline active:translate-y-0.5"
+      href="https://ring.seggs.lol/redirect?from=aspizu&dir=next"
+      aria-label="Next site in the Threadlocked webring"
+      ><span class="relative -top-px left-px" aria-hidden="true">&gt;</span></a
+    >
+  </nav>
+  <nav class="flex items-center" aria-label="Indie Web Club Bangalore webring">
+    <a
+      class="flex h-[31px] w-4 items-center justify-center bg-c64-dark-grey leading-none text-c64-white no-underline hover:no-underline active:translate-y-0.5"
+      href="https://blr.indiewebclub.org/webring/aspiz-uk/previous.html"
+      aria-label="Previous site in the Indie Web Club Bangalore webring"
+      ><span class="relative -top-px left-px" aria-hidden="true">&lt;</span></a
+    >
+    <a
+      class="block w-fit no-underline hover:no-underline"
+      href="https://blr.indiewebclub.org/"
+    >
+      <Image
+        class="block [image-rendering:pixelated]"
+        src={indieWebClubButton}
+        alt="Indie Web Club Bangalore"
+      />
+    </a>
+    <a
+      class="flex h-[31px] w-4 items-center justify-center bg-c64-dark-grey leading-none text-c64-white no-underline hover:no-underline active:translate-y-0.5"
+      href="https://blr.indiewebclub.org/webring/aspiz-uk/next.html"
+      aria-label="Next site in the Indie Web Club Bangalore webring"
+      ><span class="relative -top-px left-px" aria-hidden="true">&gt;</span></a
+    >
+  </nav>
 </div>
