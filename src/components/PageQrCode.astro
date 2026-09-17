@@ -1,112 +1,20 @@
 ---
 import QRCode from "qrcode"
-import sharp from "sharp"
-import theme from "#styles/theme.css?raw"
 
 interface Props {
   title: string
 }
 
-const bayer = [
-  [0, 32, 8, 40, 2, 34, 10, 42],
-  [48, 16, 56, 24, 50, 18, 58, 26],
-  [12, 44, 4, 36, 14, 46, 6, 38],
-  [60, 28, 52, 20, 62, 30, 54, 22],
-  [3, 35, 11, 43, 1, 33, 9, 41],
-  [51, 19, 59, 27, 49, 17, 57, 25],
-  [15, 47, 7, 39, 13, 45, 5, 37],
-  [63, 31, 55, 23, 61, 29, 53, 21],
-].flat()
-const darkColors = [
-  "var(--color-c64-purple)",
-  "var(--color-c64-red)",
-  "var(--color-c64-brown)",
-]
-const lightColors = [
-  "var(--color-c64-cyan)",
-  "var(--color-c64-yellow)",
-  "var(--color-c64-light-green)",
-]
-const ditherProbability = 0.25
-const colorProbability = 0.1
-const cellsPerModule = 8
-const cellSize = 1
-
-function createQrMatrix(url: string): boolean[][] {
-  const {modules} = QRCode.create(url, {errorCorrectionLevel: "M"})
-  const matrix: boolean[][] = []
-  for (let y = 0; y < modules.size; y++) {
-    const row: boolean[] = []
-    for (let x = 0; x < modules.size; x++) {
-      row.push(Boolean(modules.get(y, x)))
-    }
-    matrix.push(row)
-  }
-  return matrix
-}
-
-function pickColor(palette: string[]): string {
-  return palette[Math.floor(Math.random() * palette.length)]!
-}
-
-function createDitherPattern(isOn: boolean): string[] {
-  if (!isOn) return []
-
-  const dithered = Math.random() < ditherProbability
-  const colored = Math.random() < colorProbability
-  const ditherLevel = dithered
-    ? 1 + Math.floor(Math.random() * (bayer.length / 2 - 1))
-    : 0
-  const darkColor = colored ? pickColor(darkColors) : "var(--color-c64-blue)"
-  const lightColor = colored ? pickColor(lightColors) : "var(--color-c64-white)"
-  return bayer.map((threshold) =>
-    threshold < ditherLevel ? darkColor : lightColor,
-  )
-}
-
-async function renderQrPng(patterns: string[][][]): Promise<Buffer> {
-  const colors = new Map(
-    [...theme.matchAll(/(--color-c64-[\w-]+):\s*#([\da-f]{6});/gi)].map(
-      ([, name, hex]) => [`var(${name})`, Buffer.from(`${hex}ff`, "hex")],
-    ),
-  )
-  const size = patterns.length * cellsPerModule
-  const pixels = Buffer.alloc(size * size * 4)
-
-  for (const [y, row] of patterns.entries()) {
-    for (const [x, pattern] of row.entries()) {
-      for (const [i, color] of pattern.entries()) {
-        const rgba = colors.get(color)
-        if (!rgba) throw new Error(`Unknown QR color: ${color}`)
-        const pixelX = x * cellsPerModule + (i % cellsPerModule)
-        const pixelY = y * cellsPerModule + Math.floor(i / cellsPerModule)
-        pixels.set(rgba, (pixelY * size + pixelX) * 4)
-      }
-    }
-  }
-
-  return sharp(pixels, {raw: {width: size, height: size, channels: 4}})
-    .resize(size * cellSize, size * cellSize, {kernel: "nearest"})
-    .png()
-    .toBuffer()
-}
-
 const {title} = Astro.props
 const pathname = Astro.url.pathname.replace(/\/$/, "") || "/"
 const pageUrl = new URL(pathname, Astro.site).href
-const qrCode = createQrMatrix(pageUrl)
-const size = qrCode.length
-const renderedSize = size * cellsPerModule * cellSize
-const ditheredQrCode = qrCode.map((row) => row.map(createDitherPattern))
-const png = await renderQrPng(ditheredQrCode)
+const qrCode = await QRCode.toDataURL(pageUrl, {
+  width: 96,
+  margin: 0,
+  color: {dark: "#6c5eb5", light: "#00000000"},
+})
 ---
 
-<footer class="mt-8 mb-16 py-4">
-  <img
-    class="block [image-rendering:pixelated]"
-    src={`data:image/png;base64,${png.toString("base64")}`}
-    width={renderedSize}
-    height={renderedSize}
-    alt={`QR code for ${title}`}
-  />
+<footer class="mt-8 mb-16">
+  <img src={qrCode} width={96} height={96} alt={`QR code for ${title}`} />
 </footer>
