@@ -1,6 +1,5 @@
 ---
 import ArticleTree from "#components/ArticleTree.astro"
-import ArrowBarLeft from "pixelarticons/svg/arrow-bar-left.svg"
 
 interface Props {
   currentPath: string
@@ -16,19 +15,19 @@ const {currentPath} = Astro.props
   data-mobile-sidebar-backdrop></button>
 
 <aside
-  class="fixed inset-y-0 left-0 z-40 h-dvh w-2/3 overflow-y-auto bg-c64-black px-4 py-4 transition-[translate] duration-200 ease-out motion-reduce:transition-none max-[55.999rem]:not-data-open:-translate-x-full min-[56rem]:sticky min-[56rem]:z-auto min-[56rem]:box-border min-[56rem]:h-screen min-[56rem]:w-[clamp(14rem,22vw,20rem)] min-[56rem]:data-collapsed:-translate-x-full"
+  class="fixed inset-y-0 left-0 z-40 h-dvh w-2/3 overflow-y-auto bg-c64-black px-4 py-4 transition-[translate] duration-200 ease-out motion-reduce:transition-none max-[55.999rem]:not-data-open:-translate-x-full min-[56rem]:sticky min-[56rem]:z-20 min-[56rem]:box-border min-[56rem]:h-screen min-[56rem]:w-[clamp(14rem,22vw,20rem)] min-[56rem]:data-collapsed:-translate-x-full"
   id="site-sidebar"
   aria-label="Page navigation"
   data-mobile-sidebar
 >
   <button
-    class="absolute top-4 right-4 cursor-pointer text-c64-purple hover:text-c64-yellow"
+    class="absolute top-2 right-2 z-10 flex size-6 cursor-pointer items-center justify-center p-0 text-c64-grey hover:bg-c64-dark-grey"
     type="button"
     aria-label="Collapse page navigation"
     title="Collapse page navigation"
     data-mobile-sidebar-close
   >
-    <ArrowBarLeft class="size-5" aria-hidden="true" />
+    <span class="relative -top-px left-px" aria-hidden="true">&lt;</span>
   </button>
   <ArticleTree currentPath={currentPath} />
 </aside>
