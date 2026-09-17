@@ -117,7 +117,8 @@ const sourceCodeHref =
       <div
         class="mx-auto w-full max-w-[80ch] px-2 text-justify text-pretty wrap-anywhere"
       >
-        <div class="mt-4 flex h-8 items-center justify-between gap-4">
+        <SiteLogo />
+        <div class="my-4 flex h-8 items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             <UpFolderLink />
             <WeeknotesRssLink />
@@ -141,7 +142,6 @@ const sourceCodeHref =
             {lastUpdatedAt && <LastUpdated date={lastUpdatedAt} />}
           </div>
         </div>
-        <SiteLogo />
         <main class="markdown">
           {Astro.params.slug && <h1>{pageTitle}</h1>}
           {
