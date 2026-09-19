@@ -1,0 +1,72 @@
+---
+import quotes from "#content/quotes.json"
+
+const slugs = new Set<string>()
+const linkedQuotes = quotes.map((item) => {
+  const base =
+    item.quote
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]/gu, "")
+      .trim()
+      .replace(/[\s-]+/g, "-") || "quote"
+  let slug = base
+
+  for (let suffix = 2; slugs.has(slug); suffix += 1) {
+    slug = `${base}-${suffix}`
+  }
+
+  slugs.add(slug)
+  return {...item, slug}
+})
+---
+
+<div data-quotes>
+  {
+    linkedQuotes.map(({quote, author, source, sourceUrl, slug}) => (
+      <figure
+        id={slug}
+        class="not-first:border-t-2 not-first:border-c64-grey not-first:pt-8"
+      >
+        <blockquote class="border-l-0">
+          <p class="m-0">{quote}</p>
+          <footer class="mt-2 text-right">
+            <a href={`#${slug}`} aria-label={`Link to quote: ${quote}`}>
+              #
+            </a>{" "}
+            {author}
+            {source && (
+              <>
+                ,{" "}
+                <cite>
+                  {sourceUrl ? <a href={sourceUrl}>{source}</a> : source}
+                </cite>
+              </>
+            )}
+          </footer>
+        </blockquote>
+      </figure>
+    ))
+  }
+</div>
+
+<script>
+  const list = document.querySelector<HTMLElement>("[data-quotes]")
+
+  if (list) {
+    const quotes = Array.from(list.children)
+
+    for (let index = quotes.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1))
+      ;[quotes[index], quotes[randomIndex]] = [
+        quotes[randomIndex],
+        quotes[index],
+      ]
+    }
+
+    list.replaceChildren(...quotes)
+
+    if (window.location.hash) {
+      document.getElementById(window.location.hash.slice(1))?.scrollIntoView()
+    }
+  }
+</script>
