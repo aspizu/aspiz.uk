@@ -1,0 +1,93 @@
+---
+import {z} from "astro/zod"
+import {formatDistanceToNow} from "date-fns"
+
+const issueSchema = z.object({
+  number: z.number(),
+  title: z.string(),
+  html_url: z.string().url(),
+  pull_request: z
+    .object({merged_at: z.string().datetime().nullable()})
+    .optional(),
+})
+const pullRequests: {
+  number: number
+  title: string
+  url: string
+  mergedAt: string
+}[] = []
+const token = process.env.GITHUB_TOKEN
+
+// Astro renders this component into static HTML at build time.
+// The issues endpoint includes PRs and has no search result limit.
+for (let page = 1; ; page += 1) {
+  const url = new URL("https://api.github.com/repos/ente/ente/issues")
+  url.search = new URLSearchParams({
+    creator: "aspizu",
+    state: "closed",
+    sort: "created",
+    direction: "asc",
+    per_page: "100",
+    page: String(page),
+  }).toString()
+  // Pagination depends on the previous response's Link header.
+  // eslint-disable-next-line no-await-in-loop
+  const response = await fetch(url, {
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "aspiz.uk",
+      ...(token ? {Authorization: `Bearer ${token}`} : {}),
+    },
+    signal: AbortSignal.timeout(30_000),
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Unable to fetch work PRs: GitHub returned ${response.status} on page ${page}. Check GITHUB_TOKEN and API rate limits.`,
+    )
+  }
+
+  // eslint-disable-next-line no-await-in-loop
+  const issues = z.array(issueSchema).parse(await response.json())
+  for (const issue of issues) {
+    if (issue.pull_request?.merged_at) {
+      pullRequests.push({
+        number: issue.number,
+        title: issue.title,
+        url: issue.html_url,
+        mergedAt: issue.pull_request.merged_at,
+      })
+    }
+  }
+  if (!response.headers.get("link")?.includes('rel="next"')) break
+}
+
+pullRequests.sort(
+  (a, b) => b.mergedAt.localeCompare(a.mergedAt) || b.number - a.number,
+)
+---
+
+<p>
+  My work at <a href="https://ente.com">ente.com</a>:
+</p>
+{
+  pullRequests.length === 0 ? (
+    <p>No merged pull requests yet.</p>
+  ) : (
+    <div class="my-4 flex flex-col gap-2 text-left">
+      {pullRequests.map((pr) => (
+        <div class="flex items-baseline gap-2">
+          <a class="min-w-0 truncate" href={pr.url} title={pr.title}>
+            {pr.title}
+          </a>
+          <span class="shrink-0 whitespace-nowrap">
+            merged{" "}
+            <time datetime={pr.mergedAt}>
+              {formatDistanceToNow(new Date(pr.mergedAt), {addSuffix: true})}
+            </time>
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
