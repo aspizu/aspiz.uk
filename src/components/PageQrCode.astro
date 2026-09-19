@@ -16,5 +16,11 @@ const qrCode = await QRCode.toDataURL(pageUrl, {
 ---
 
 <footer class="mt-8 mb-16">
-  <img src={qrCode} width={96} height={96} alt={`QR code for ${title}`} />
+  <img
+    src={qrCode}
+    width={96}
+    height={96}
+    alt={`QR code for ${title}`}
+    style="image-rendering: pixelated;"
+  />
 </footer>
