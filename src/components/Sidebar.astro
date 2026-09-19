@@ -32,6 +32,12 @@ const {currentPath} = Astro.props
   <ArticleTree currentPath={currentPath} />
 </aside>
 
+<style>
+  button[data-mobile-sidebar-close]:active {
+    translate: 0 2px;
+  }
+</style>
+
 <script>
   const sidebar = document.querySelector<HTMLElement>("[data-mobile-sidebar]")
   const openButton = document.querySelector<HTMLButtonElement>(
