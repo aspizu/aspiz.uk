@@ -2,14 +2,18 @@
 import Rss from "pixelarticons/svg/rss.svg"
 
 const pathname = Astro.url.pathname.replace(/\/$/, "")
+const isWeeknotes =
+  pathname === "/weeknotes" || pathname.startsWith("/weeknotes/")
 ---
 
 {
-  (pathname === "/weeknotes" || pathname.startsWith("/weeknotes/")) && (
+  (pathname === "" || isWeeknotes) && (
     <a
       class="inline-flex items-center gap-1 no-underline hover:no-underline"
-      href="/weeknotes/rss.xml"
-      title="Subscribe to weeknotes"
+      href={isWeeknotes ? "/weeknotes/rss.xml" : "/rss.xml"}
+      title={
+        isWeeknotes ? "Subscribe to weeknotes" : "Subscribe to site updates"
+      }
     >
       <Rss class="size-4.5" aria-hidden="true" />
       <span>RSS</span>

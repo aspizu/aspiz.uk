@@ -5,11 +5,11 @@ import FolderIndex from "#components/FolderIndex.astro"
 import LastFM from "#components/LastFM.astro"
 import LastUpdated from "#components/LastUpdated.astro"
 import PageQrCode from "#components/PageQrCode.astro"
+import RssLink from "#components/RssLink.astro"
 import Sidebar from "#components/Sidebar.astro"
 import SidebarExpandButton from "#components/SidebarExpandButton.astro"
 import SiteLogo from "#components/SiteLogo.astro"
 import UpFolderLink from "#components/UpFolderLink.astro"
-import WeeknotesRssLink from "#components/WeeknotesRssLink.astro"
 import "#styles/main.css"
 import {getPageSlug} from "#utils/page-slug"
 import {getCollection, render} from "astro:content"
@@ -94,6 +94,12 @@ const sourceCodeHref =
     <link
       rel="alternate"
       type="application/rss+xml"
+      title="aspiz.uk"
+      href="/rss.xml"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
       title="aspiz.uk weeknotes"
       href="/weeknotes/rss.xml"
     />
@@ -121,7 +127,7 @@ const sourceCodeHref =
         <div class="my-4 flex h-8 items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             <UpFolderLink />
-            <WeeknotesRssLink />
+            <RssLink />
           </div>
           <div class="ml-auto flex items-center gap-4">
             {
