@@ -88,6 +88,7 @@ const pages = defineCollection({
   schema: z.object({
     date: z.coerce.date().optional(),
     description: z.string().default(""),
+    nopub: z.boolean().default(false).describe("Exclude this page from RSS"),
     slug: z.string().optional(),
     title: z.string().default(""),
     updatedAt: z.coerce.date(),
