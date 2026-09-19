@@ -25,15 +25,12 @@ const linkedQuotes = quotes.map((item) => {
     linkedQuotes.map(({quote, author, source, sourceUrl, slug}) => (
       <figure
         id={slug}
-        class="not-first:border-t-2 not-first:border-c64-grey not-first:pt-8"
+        class="my-0 py-8 not-first:border-t-2 not-first:border-c64-black first:pt-0 last:pb-0"
       >
-        <blockquote class="border-l-0">
+        <blockquote class="my-0 border-l-0 text-c64-white">
           <p class="m-0">{quote}</p>
           <footer class="mt-2 text-right">
-            <a href={`#${slug}`} aria-label={`Link to quote: ${quote}`}>
-              #
-            </a>{" "}
-            {author}
+            <span class="text-c64-light-grey">{author}</span>
             {source && (
               <>
                 ,{" "}
