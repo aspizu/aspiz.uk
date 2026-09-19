@@ -94,7 +94,7 @@ export const GET: APIRoute = async ({site}) => {
 
       const slug = getPageSlug(page)
       const link = new URL(`/${slug}`, site).href
-      const isNew = !renamed && /^new file mode /m.test(patch)
+      const isNew = renamed || /^new file mode /m.test(patch)
 
       items.push({
         title: `${page.data.title}${isNew ? "" : " (Update)"}`,
