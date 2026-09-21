@@ -4,3 +4,5 @@
 /.pnpm-store/
 /dist/
 /.wrangler/
+worker-configuration.d.ts
+.dev.vars*
