@@ -2,6 +2,7 @@
 import LastFM from "#components/LastFM.astro"
 import Sidebar from "#components/Sidebar.astro"
 import SidebarExpandButton from "#components/SidebarExpandButton.astro"
+import Umami from "#components/Umami.astro"
 import "#styles/main.css"
 
 interface Props {
@@ -37,6 +38,7 @@ const {description, title} = Astro.props
       type="font/woff2"
       crossorigin
     />
+    <Umami />
     {description && <meta name="description" content={description} />}
     <title>{title}</title>
   </head>

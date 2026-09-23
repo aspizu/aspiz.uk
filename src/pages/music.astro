@@ -1,5 +1,6 @@
 ---
 import music from "#content/music.json"
+import Umami from "#components/Umami.astro"
 import "#styles/music.css"
 import {getYouTubeThumbnailUrl} from "#utils/youtube-thumbnail"
 
@@ -31,6 +32,7 @@ const sortedMusic = await Promise.all(
 
 <meta name="viewport" content="width=device-width" />
 <link rel="icon" href="/assets/favicon.png" />
+<Umami />
 <title>{pageTitle}</title>
 <div class="font-sans">
   <div class="page-transition"></div>
