@@ -6,17 +6,13 @@ const isWeeknotes =
   pathname === "/weeknotes" || pathname.startsWith("/weeknotes/")
 ---
 
-{
-  (pathname === "" || isWeeknotes) && (
-    <a
-      class="inline-flex items-center gap-1 no-underline hover:no-underline"
-      href={isWeeknotes ? "/weeknotes/rss.xml" : "/rss.xml"}
-      title={
-        isWeeknotes ? "Subscribe to weeknotes" : "Subscribe to site updates"
-      }
-    >
-      <Rss class="size-4.5" aria-hidden="true" />
-      <span>RSS</span>
-    </a>
-  )
-}
+{(pathname === "" || isWeeknotes) && (
+  <a
+    class="inline-flex items-center gap-1 no-underline hover:no-underline"
+    href={isWeeknotes ? "/weeknotes/rss.xml" : "/rss.xml"}
+    title={isWeeknotes ? "Subscribe to weeknotes" : "Subscribe to site updates"}
+  >
+    <Rss class="size-4.5" aria-hidden="true" />
+    <span>RSS</span>
+  </a>
+)}

@@ -14,14 +14,19 @@ const quote = dailyQuotes[0]
 
 <figure data-daily-quote>
   <blockquote>
-    <p class="m-0" data-quote-text>{quote.quote}</p>
+    <p class="m-0" data-quote-text>
+      {quote.quote}
+    </p>
     <footer class="mt-2 text-right">
       <span data-quote-author>{quote.author}</span>
-      <span data-quote-source-citation class:list={{hidden: !quote.sourceUrl}}
-        >,{" "}<cite>
-          <a data-quote-source href={quote.sourceUrl}>{quote.source}</a>
-        </cite></span
-      >
+      <span data-quote-source-citation class:list={{hidden: !quote.sourceUrl}}>
+        ,{" "}
+        <cite>
+          <a data-quote-source href={quote.sourceUrl}>
+            {quote.source}
+          </a>
+        </cite>
+      </span>
     </footer>
   </blockquote>
 </figure>

@@ -28,88 +28,82 @@ const visibleNodes = [
 const hiddenFileCount = depth === 0 ? 0 : files.length - maxVisibleFiles
 ---
 
-<ul
-  class="file-tree-branch relative mt-1 ml-[1ch] flex list-none flex-col gap-1 border-l-2 border-c64-dark-grey pl-[calc(2ch+2px)]"
->
-  {
-    visibleNodes.map((node) => {
-      const isCurrentPage =
-        normalizedCurrentPath === (node.href.replace(/\/$/, "") || "/")
+<ul class="file-tree-branch relative mt-1 ml-[1ch] flex list-none flex-col gap-1 border-l-2 border-c64-dark-grey pl-[calc(2ch+2px)]">
+  {visibleNodes.map((node) => {
+    const isCurrentPage =
+      normalizedCurrentPath === (node.href.replace(/\/$/, "") || "/")
 
-      return (
-        <li class="relative">
-          <span
-            class="absolute top-[calc(0.5lh-1px)] left-[calc(-2ch-2px)] w-[calc(1.5ch+2px)] border-t-2 border-c64-dark-grey"
-            aria-hidden="true"
-          />
-          {node.kind === "directory" ? (
-            <details
-              open={
-                isCurrentPage ||
-                currentPath.startsWith(`${node.href}/`) ||
-                depth === 0
-              }
-            >
-              <summary class="w-fit cursor-pointer list-none wrap-anywhere text-c64-purple [&::-webkit-details-marker]:hidden">
-                <span class="file-tree-closed mr-[0.5ch]" aria-hidden="true">
-                  [+]
-                </span>
-                <span class="file-tree-open mr-[0.5ch]" aria-hidden="true">
-                  [-]
-                </span>
-                <a
-                  class:list={[
-                    "relative -top-px no-underline hover:text-c64-yellow hover:underline",
-                    isCurrentPage ? "text-c64-orange" : "text-c64-purple",
-                  ]}
-                  href={node.href}
-                  title={node.title || node.name}
-                  aria-current={isCurrentPage ? "page" : undefined}
-                >
-                  {node.title || node.name}/
-                </a>
-              </summary>
-              <Astro.self
-                nodes={node.children}
-                currentPath={currentPath}
-                depth={depth + 1}
-                folderHref={node.href}
-              />
-            </details>
-          ) : (
-            <a
-              class:list={[
-                "relative -top-px block wrap-anywhere no-underline hover:text-c64-yellow hover:underline",
-                isCurrentPage ? "text-c64-orange" : "text-c64-light-blue",
-              ]}
-              href={node.href}
-              title={node.title || node.name}
-              aria-current={isCurrentPage ? "page" : undefined}
-            >
-              {node.title || node.name}
-            </a>
-          )}
-        </li>
-      )
-    })
-  }
-  {
-    hiddenFileCount > 0 && (
+    return (
       <li class="relative">
         <span
           class="absolute top-[calc(0.5lh-1px)] left-[calc(-2ch-2px)] w-[calc(1.5ch+2px)] border-t-2 border-c64-dark-grey"
           aria-hidden="true"
         />
-        <a
-          class="relative -top-px block wrap-anywhere text-c64-light-blue no-underline hover:text-c64-yellow hover:underline"
-          href={folderHref}
-          title={`View ${hiddenFileCount} more entries`}
-        >
-          more..
-        </a>
+        {node.kind === "directory" ? (
+          <details
+            open={
+              isCurrentPage ||
+              currentPath.startsWith(`${node.href}/`) ||
+              depth === 0
+            }
+          >
+            <summary class="w-fit cursor-pointer list-none wrap-anywhere text-c64-purple [&::-webkit-details-marker]:hidden">
+              <span class="file-tree-closed mr-[0.5ch]" aria-hidden="true">
+                [+]
+              </span>
+              <span class="file-tree-open mr-[0.5ch]" aria-hidden="true">
+                [-]
+              </span>
+              <a
+                class:list={[
+                  "relative -top-px no-underline hover:text-c64-yellow hover:underline",
+                  isCurrentPage ? "text-c64-orange" : "text-c64-purple",
+                ]}
+                href={node.href}
+                title={node.title || node.name}
+                aria-current={isCurrentPage ? "page" : undefined}
+              >
+                {node.title || node.name}/
+              </a>
+            </summary>
+            <Astro.self
+              nodes={node.children}
+              currentPath={currentPath}
+              depth={depth + 1}
+              folderHref={node.href}
+            />
+          </details>
+        ) : (
+          <a
+            class:list={[
+              "relative -top-px block wrap-anywhere no-underline hover:text-c64-yellow hover:underline",
+              isCurrentPage ? "text-c64-orange" : "text-c64-light-blue",
+            ]}
+            href={node.href}
+            title={node.title || node.name}
+            aria-current={isCurrentPage ? "page" : undefined}
+          >
+            {node.title || node.name}
+          </a>
+        )}
       </li>
     )
-  }
+  })}
+  {hiddenFileCount > 0 && (
+    <li class="relative">
+      <span
+        class="absolute top-[calc(0.5lh-1px)] left-[calc(-2ch-2px)] w-[calc(1.5ch+2px)] border-t-2 border-c64-dark-grey"
+        aria-hidden="true"
+      />
+      <a
+        class="relative -top-px block wrap-anywhere text-c64-light-blue no-underline hover:text-c64-yellow hover:underline"
+        href={folderHref}
+        title={`View ${hiddenFileCount} more entries`}
+      >
+        more..
+      </a>
+    </li>
+  )}
 </ul>
 
 <style>

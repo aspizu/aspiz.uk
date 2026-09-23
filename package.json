@@ -10,11 +10,11 @@
     "prepare": "lefthook install"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "^7.2.4",
-    "@astrojs/mdx": "^7.0.8",
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/mdx": "^8.0.1",
     "@astrojs/rss": "^4.0.19",
     "@fontsource-variable/figtree": "^5.3.0",
-    "astro": "^7.2.9",
+    "astro": "^7.3.3",
     "date-fns": "^4.4.0",
     "mdast-util-find-and-replace": "^3.0.2",
     "pixelarticons": "^2.4.1",
@@ -23,18 +23,18 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.6.2",
     "@types/qrcode": "^1.5.6",
-    "lefthook": "^2.1.12",
-    "oxfmt": "^0.65.0",
-    "oxlint": "^1.80.0",
-    "prettier": "3.9.6",
-    "prettier-plugin-astro": "0.14.1",
-    "prettier-plugin-tailwindcss": "^0.8.1",
+    "lefthook": "^2.1.14",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "prettier": "3.9.8",
+    "prettier-plugin-astro": "1.0.1",
+    "prettier-plugin-tailwindcss": "0.8.1",
     "tailwind-lint": "^0.12.1",
     "tailwindcss": "^4.3.3",
-    "typescript": "^6.0.3",
-    "vite": "^8.2.2",
-    "wrangler": "^4.128.0"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "wrangler": "^4.136.2"
   }
 }

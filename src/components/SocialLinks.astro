@@ -46,15 +46,13 @@ const socialLinks = [
 ---
 
 <div class="mx-auto flex w-fit gap-2 [&_a:active]:translate-y-0.5">
-  {
-    socialLinks.map(({href, label}, index) => (
-      <a class="block size-8" href={href} aria-label={label}>
-        <span
-          aria-hidden="true"
-          class="block size-8 bg-size-[416px_32px] bg-no-repeat [image-rendering:pixelated]"
-          style={`background-image: url(${socialIcons.src}); background-position: -${index * 32}px 0`}
-        />
-      </a>
-    ))
-  }
+  {socialLinks.map(({href, label}, index) => (
+    <a class="block size-8" href={href} aria-label={label}>
+      <span
+        aria-hidden="true"
+        class="block size-8 bg-size-[416px_32px] bg-no-repeat [image-rendering:pixelated]"
+        style={`background-image: url(${socialIcons.src}); background-position: -${index * 32}px 0`}
+      />
+    </a>
+  ))}
 </div>

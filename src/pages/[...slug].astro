@@ -120,9 +120,7 @@ const sourceCodeHref =
       data-page-layout
     >
       <Sidebar currentPath={Astro.url.pathname.replace(/\/$/, "") || "/"} />
-      <div
-        class="mx-auto w-full max-w-[80ch] px-2 text-justify text-pretty wrap-anywhere min-[56rem]:col-start-2"
-      >
+      <div class="mx-auto w-full max-w-[80ch] px-2 text-justify text-pretty wrap-anywhere min-[56rem]:col-start-2">
         <SiteLogo />
         <div class="my-4 flex h-8 items-center justify-between gap-4">
           <div class="flex items-center gap-4">
@@ -130,33 +128,29 @@ const sourceCodeHref =
             <RssLink />
           </div>
           <div class="ml-auto flex items-center gap-4">
-            {
-              sourceCodeHref && (
-                <a
-                  aria-label="Edit Source"
-                  class="source-code-link hidden no-underline hover:no-underline"
-                  href={sourceCodeHref}
-                  title="Open this page's source in VS Code"
-                >
-                  <span class="inline-flex items-center gap-1">
-                    <Pencil class="size-4.5" aria-hidden="true" />
-                    <span>Edit</span>
-                  </span>
-                </a>
-              )
-            }
+            {sourceCodeHref && (
+              <a
+                aria-label="Edit Source"
+                class="source-code-link hidden no-underline hover:no-underline"
+                href={sourceCodeHref}
+                title="Open this page's source in VS Code"
+              >
+                <span class="inline-flex items-center gap-1">
+                  <Pencil class="size-4.5" aria-hidden="true" />
+                  <span>Edit</span>
+                </span>
+              </a>
+            )}
             {lastUpdatedAt && <LastUpdated date={lastUpdatedAt} />}
           </div>
         </div>
         <main class="markdown">
           {Astro.params.slug && <h1>{pageTitle}</h1>}
-          {
-            props.kind === "folder" ? (
-              <FolderIndex folder={props.folder} />
-            ) : Content ? (
-              <Content />
-            ) : null
-          }
+          {props.kind === "folder" ? (
+            <FolderIndex folder={props.folder} />
+          ) : Content ? (
+            <Content />
+          ) : null}
         </main>
         <PageQrCode title={pageTitle} />
       </div>

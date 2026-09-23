@@ -34,48 +34,44 @@ const sortedMusic = await Promise.all(
 <title>{pageTitle}</title>
 <div class="font-sans">
   <div class="page-transition"></div>
-  <main
-    class="grid min-h-screen grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-0 bg-black [&:has(.video:hover)_.video:not(:hover)]:opacity-65"
-  >
-    {
-      sortedMusic.map(({artist, track, thumbnail, watch, dark}, index) => (
-        <article
-          class="music-card video group @container aspect-square overflow-hidden transition-opacity duration-200 motion-reduce:transition-none"
-          style={`--card-index: ${index}`}
+  <main class="grid min-h-screen grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] gap-0 bg-black [&:has(.video:hover)_.video:not(:hover)]:opacity-65">
+    {sortedMusic.map(({artist, track, thumbnail, watch, dark}, index) => (
+      <article
+        class="music-card video group @container aspect-square overflow-hidden transition-opacity duration-200 motion-reduce:transition-none"
+        style={`--card-index: ${index}`}
+      >
+        <a
+          class:list={[
+            "relative block size-full",
+            dark ? "text-black" : "text-white",
+          ]}
+          href={watch}
         >
-          <a
-            class:list={[
-              "relative block size-full",
-              dark ? "text-black" : "text-white",
-            ]}
-            href={watch}
+          <img
+            class="block size-full object-cover transition-[filter] duration-300 group-focus-within:brightness-[1.08] group-focus-within:saturate-[1.1] group-hover:brightness-[1.08] group-hover:saturate-[1.1] motion-reduce:transition-none"
+            src={thumbnail}
+            alt=""
+            loading="lazy"
+          />
+          <span
+            class="absolute inset-x-0 top-0 overflow-hidden p-4 text-left text-xl leading-none whitespace-nowrap"
+            aria-label={`${artist} - ${track}`}
           >
-            <img
-              class="block size-full object-cover transition-[filter] duration-300 group-focus-within:brightness-[1.08] group-focus-within:saturate-[1.1] group-hover:brightness-[1.08] group-hover:saturate-[1.1] motion-reduce:transition-none"
-              src={thumbnail}
-              alt=""
-              loading="lazy"
-            />
-            <span
-              class="absolute inset-x-0 top-0 overflow-hidden p-4 text-left text-xl leading-none whitespace-nowrap"
-              aria-label={`${artist} - ${track}`}
-            >
-              <span class="animate-marquee flex w-max group-hover:[animation-play-state:paused] motion-reduce:animate-none">
-                <span class="min-w-[calc(100cqw-2rem)] shrink-0 pr-8">
-                  <strong>{artist}</strong> - {track}
-                </span>
-                <span
-                  class="min-w-[calc(100cqw-2rem)] shrink-0 pr-8"
-                  aria-hidden="true"
-                >
-                  <strong>{artist}</strong> - {track}
-                </span>
+            <span class="animate-marquee flex w-max group-hover:[animation-play-state:paused] motion-reduce:animate-none">
+              <span class="min-w-[calc(100cqw-2rem)] shrink-0 pr-8">
+                <strong>{artist}</strong> - {track}
+              </span>
+              <span
+                class="min-w-[calc(100cqw-2rem)] shrink-0 pr-8"
+                aria-hidden="true"
+              >
+                <strong>{artist}</strong> - {track}
               </span>
             </span>
-          </a>
-        </article>
-      ))
-    }
+          </span>
+        </a>
+      </article>
+    ))}
   </main>
 </div>
 

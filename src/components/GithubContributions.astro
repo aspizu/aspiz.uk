@@ -111,36 +111,34 @@ const tooltip = (day: Day): string =>
   `${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"} on ${format(parseISO(day.date), "MMM do")}`
 ---
 
-{
-  calendar && (
-    <div
-      class="mx-auto my-4 flex w-fit items-start overflow-x-auto pb-1"
-      role="img"
-      aria-label={`GitHub contribution grid, ${totalContributions} contributions in the last year`}
-    >
-      {grid.map((week) => (
-        <div class="flex flex-col">
-          {week.map((day) =>
-            day ? (
-              <a
-                class="grid size-2 grid-cols-4 grid-rows-4 bg-c64-light-blue"
-                href="https://github.com/aspizu"
-                title={tooltip(day)}
-              >
-                {pixelIndexes.map((pixel) => {
-                  const shade =
-                    ditherLevels[githubLevels[day.color] ?? 0][
-                      Math.floor(pixel / 4)
-                    ][pixel % 4]
-                  return <span class={pixelClasses[shade]} />
-                })}
-              </a>
-            ) : (
-              <span class="size-2" />
-            ),
-          )}
-        </div>
-      ))}
-    </div>
-  )
-}
+{calendar && (
+  <div
+    class="mx-auto my-4 flex w-fit items-start overflow-x-auto pb-1"
+    role="img"
+    aria-label={`GitHub contribution grid, ${totalContributions} contributions in the last year`}
+  >
+    {grid.map((week) => (
+      <div class="flex flex-col">
+        {week.map((day) =>
+          day ? (
+            <a
+              class="grid size-2 grid-cols-4 grid-rows-4 bg-c64-light-blue"
+              href="https://github.com/aspizu"
+              title={tooltip(day)}
+            >
+              {pixelIndexes.map((pixel) => {
+                const shade =
+                  ditherLevels[githubLevels[day.color] ?? 0][
+                    Math.floor(pixel / 4)
+                  ][pixel % 4]
+                return <span class={pixelClasses[shade]} />
+              })}
+            </a>
+          ) : (
+            <span class="size-2" />
+          ),
+        )}
+      </div>
+    ))}
+  </div>
+)}

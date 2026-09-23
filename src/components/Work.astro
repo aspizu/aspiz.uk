@@ -70,24 +70,22 @@ pullRequests.sort(
 <p>
   My work at <a href="https://ente.com">ente.com</a>:
 </p>
-{
-  pullRequests.length === 0 ? (
-    <p>No merged pull requests yet.</p>
-  ) : (
-    <div class="my-4 flex flex-col gap-2 text-left">
-      {pullRequests.map((pr) => (
-        <div class="flex items-baseline gap-2">
-          <a class="min-w-0 truncate" href={pr.url} title={pr.title}>
-            {pr.title}
-          </a>
-          <span class="shrink-0 whitespace-nowrap">
-            merged{" "}
-            <time datetime={pr.mergedAt}>
-              {formatDistanceToNow(new Date(pr.mergedAt), {addSuffix: true})}
-            </time>
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
+{pullRequests.length === 0 ? (
+  <p>No merged pull requests yet.</p>
+) : (
+  <div class="my-4 flex flex-col gap-2 text-left">
+    {pullRequests.map((pr) => (
+      <div class="flex items-baseline gap-2">
+        <a class="min-w-0 truncate" href={pr.url} title={pr.title}>
+          {pr.title}
+        </a>
+        <span class="shrink-0 whitespace-nowrap">
+          merged{" "}
+          <time datetime={pr.mergedAt}>
+            {formatDistanceToNow(new Date(pr.mergedAt), {addSuffix: true})}
+          </time>
+        </span>
+      </div>
+    ))}
+  </div>
+)}
