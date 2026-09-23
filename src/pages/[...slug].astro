@@ -152,7 +152,7 @@ const sourceCodeHref =
             <Content />
           ) : null}
         </main>
-        <PageQrCode title={pageTitle} />
+        {Astro.params.slug && <PageQrCode title={pageTitle} />}
       </div>
     </div>
     <LastFM />
