@@ -1,0 +1,42 @@
+---
+import DailyQuote from "#components/DailyQuote.astro"
+import SiteLogo from "#components/SiteLogo.astro"
+import SocialLinks from "#components/SocialLinks.astro"
+import WebButtons from "#components/WebButtons.astro"
+import Layout from "#layouts/Layout.astro"
+---
+
+<Layout title="aspiz.uk">
+  <div class="mx-auto flex min-h-screen w-full max-w-[80ch] flex-col justify-center px-2 text-justify text-pretty wrap-anywhere min-[56rem]:col-start-2">
+    <SiteLogo class="mb-8" />
+    <main class="markdown">
+      <p>
+        <SocialLinks />
+      </p>
+      <p>Hey!, I'm aspizu</p>
+      <p>
+        I'm a hacker (in its{" "}
+        <a href="http://catb.org/~esr/jargon/html/H/hacker.html">
+          original meaning
+        </a>
+        ) from India.
+      </p>
+      <DailyQuote />
+      <p>
+        I'm a software engineer at <a href="https://ente.com">ente.com</a>,
+        youngest in the team.
+      </p>
+      <p>
+        I created <a href="https://github.com/aspizu/goboscript">goboscript</a>.
+        500+ stars, Reached{" "}
+        <a href="https://news.ycombinator.com/item?id=44026799">HN Frontpage</a>
+        . Won 50k Rs. in{" "}
+        <a href="https://forum.fossunited.org/t/foss-hack-2025-results/5541">
+          FOSS Hack 2025
+        </a>{" "}
+        top 0.4%
+      </p>
+      <WebButtons />
+    </main>
+  </div>
+</Layout>
