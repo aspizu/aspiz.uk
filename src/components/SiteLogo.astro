@@ -8,12 +8,12 @@ const {class: className} = Astro.props
 
 <pre
   class:list={["mx-auto w-[36ch] leading-4", className]}
-><a class="logo" href="/">                       __
+><span class="logo">                       __
 _____    ____________ |__|_______
 \__  \  /  ___/\____ \|  \___   /
  / __ \_\___ \ |  |_&gt; &gt;  |/    /
 &lt;____  /____  &gt;|   __/|__/_____ \
-     \/     \/ |__|            \/.uk</a></pre>
+     \/     \/ |__|            \/.uk</span></pre>
 
 <script>
   await document.fonts.ready
@@ -114,7 +114,7 @@ _____    ____________ |__|_______
   .logo {
     position: relative;
     display: block;
+    user-select: none;
     color: var(--color-c64-light-blue);
-    text-decoration-line: none;
   }
 </style>

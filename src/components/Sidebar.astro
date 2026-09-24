@@ -8,21 +8,27 @@ interface Props {
 const {currentPath} = Astro.props
 ---
 
+<div
+  aria-hidden="true"
+  data-sidebar-peek-zone
+  class="fixed top-11 bottom-0 left-0 z-20 hidden w-4 min-[56rem]:sidebar-collapsed:block"
+></div>
+
 <button
-  class="fixed inset-0 z-30 hidden cursor-pointer bg-c64-black/50 transition-opacity duration-200 ease-out not-data-open:pointer-events-none not-data-open:opacity-0 motion-reduce:transition-none max-[55.999rem]:block"
+  class="fixed inset-0 z-30 hidden bg-c64-black/50 transition-opacity duration-200 ease-out not-data-open:pointer-events-none not-data-open:opacity-0 motion-reduce:transition-none max-[55.999rem]:block"
   type="button"
   aria-label="Close page navigation"
   data-mobile-sidebar-backdrop
 ></button>
 
 <aside
-  class="fixed inset-y-0 left-0 z-40 h-dvh w-2/3 overflow-y-auto overscroll-y-none bg-c64-black px-4 py-4 transition-[translate] duration-200 ease-out motion-reduce:transition-none max-[55.999rem]:not-data-open:-translate-x-full min-[56rem]:z-20 min-[56rem]:box-border min-[56rem]:h-screen min-[56rem]:w-[clamp(14rem,22vw,20rem)] min-[56rem]:data-collapsed:-translate-x-full"
+  class="fixed inset-y-0 left-0 z-40 h-dvh w-2/3 overflow-y-auto overscroll-y-none bg-c64-black px-4 py-4 transition-[translate] duration-200 ease-out motion-reduce:transition-none max-[55.999rem]:not-data-open:-translate-x-full min-[56rem]:z-20 min-[56rem]:box-border min-[56rem]:h-screen min-[56rem]:w-[clamp(14rem,22vw,20rem)] min-[56rem]:sidebar-collapsed:-translate-x-full min-[56rem]:sidebar-collapsed:data-peek:translate-x-0"
   id="site-sidebar"
   aria-label="Page navigation"
   data-mobile-sidebar
 >
   <button
-    class="absolute top-2 right-2 z-10 flex size-6 cursor-pointer items-center justify-center p-0 text-c64-grey before:absolute before:-top-2 before:-right-2 before:-bottom-3 before:-left-3 before:content-[''] hover:bg-c64-dark-grey"
+    class="absolute top-2 right-2 z-10 flex size-6 items-center justify-center p-0 text-c64-grey before:absolute before:-top-2 before:-right-2 before:-bottom-3 before:-left-3 before:content-[''] hover:bg-c64-dark-grey"
     type="button"
     aria-label="Collapse page navigation"
     title="Collapse page navigation"
@@ -52,54 +58,72 @@ const {currentPath} = Astro.props
   const backdrop = document.querySelector<HTMLButtonElement>(
     "[data-mobile-sidebar-backdrop]",
   )
-  const pageLayout = sidebar?.closest<HTMLElement>("[data-page-layout]")
+  const peekZone = document.querySelector<HTMLElement>(
+    "[data-sidebar-peek-zone]",
+  )
 
-  if (sidebar && openButton && closeButton && backdrop && pageLayout) {
+  if (sidebar && openButton && closeButton && backdrop && peekZone) {
     const mobileMedia = window.matchMedia("(max-width: 55.999rem)")
-    let storedOpen = sessionStorage.getItem("sidebar-open")
-    const setSidebarOpen = (open: boolean) => {
+    let storedOpen = localStorage.getItem("sidebar-open")
+    const setSidebarOpen = (open: boolean, persist = false) => {
       const desktopCollapsed = !mobileMedia.matches && !open
 
       sidebar.toggleAttribute("data-open", open)
-      sidebar.toggleAttribute("data-collapsed", desktopCollapsed)
       openButton.toggleAttribute("data-open", open)
-      openButton.toggleAttribute("data-collapsed", desktopCollapsed)
       backdrop.toggleAttribute("data-open", open)
-      pageLayout.toggleAttribute("data-sidebar-collapsed", desktopCollapsed)
+      sidebar.removeAttribute("data-peek")
+      document.documentElement.toggleAttribute(
+        "data-sidebar-collapsed",
+        desktopCollapsed,
+      )
       openButton.setAttribute("aria-expanded", String(open))
-      sidebar.inert = !open
+      sidebar.inert = mobileMedia.matches && !open
       document.documentElement.classList.toggle(
         "overflow-hidden",
         mobileMedia.matches && open,
       )
       const value = String(open)
-      if (storedOpen !== value) {
+      if (persist && storedOpen !== value) {
         storedOpen = value
-        sessionStorage.setItem("sidebar-open", value)
+        localStorage.setItem("sidebar-open", value)
       }
     }
 
     openButton.addEventListener("click", () => {
-      setSidebarOpen(true)
+      setSidebarOpen(true, true)
       closeButton.focus()
     })
     closeButton.addEventListener("click", () => {
-      setSidebarOpen(false)
+      setSidebarOpen(false, true)
       openButton.focus()
     })
     backdrop.addEventListener("click", () => {
-      setSidebarOpen(false)
+      setSidebarOpen(false, true)
       openButton.focus()
     })
     window.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && sidebar.hasAttribute("data-open")) {
-        setSidebarOpen(false)
+        setSidebarOpen(false, true)
         openButton.focus()
       }
     })
     mobileMedia.addEventListener("change", () =>
       setSidebarOpen(!mobileMedia.matches),
     )
+    peekZone.addEventListener("mouseenter", () => {
+      if (
+        !mobileMedia.matches &&
+        document.documentElement.hasAttribute("data-sidebar-collapsed")
+      ) {
+        sidebar.setAttribute("data-peek", "")
+      }
+    })
+    sidebar.addEventListener("mouseleave", () => {
+      sidebar.removeAttribute("data-peek")
+    })
+    document.documentElement.addEventListener("mouseleave", () => {
+      sidebar.removeAttribute("data-peek")
+    })
     const isHomepage = location.pathname.replace(/\/+$/, "") === ""
     setSidebarOpen(
       !mobileMedia.matches &&
