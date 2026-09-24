@@ -16,6 +16,7 @@
     "@astrojs/rss": "^4.0.19",
     "@fontsource-variable/figtree": "^5.3.0",
     "astro": "^7.3.3",
+    "cuelume": "^0.2.2",
     "date-fns": "^4.4.0",
     "mdast-util-find-and-replace": "^3.0.2",
     "pixelarticons": "^2.4.1",
