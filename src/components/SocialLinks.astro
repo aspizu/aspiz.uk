@@ -45,7 +45,7 @@ const socialLinks = [
 ]
 ---
 
-<div class="mx-auto flex w-fit gap-2 [&_a:active]:translate-y-0.5">
+<div class="mx-auto flex w-fit flex-wrap gap-2 [&_a:active]:translate-y-0.5">
   {socialLinks.map(({href, label}, index) => (
     <a class="block size-8" href={href} aria-label={label}>
       <span

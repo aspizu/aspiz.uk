@@ -62,5 +62,23 @@ const {description, title} = Astro.props
       <slot />
     </div>
     <LastFM />
+    <script>
+      import {bind, play} from "cuelume"
+
+      bind()
+
+      document.addEventListener(
+        "click",
+        (event) => {
+          if (
+            event.target instanceof Element &&
+            event.target.closest("a[href]")
+          ) {
+            play("tick")
+          }
+        },
+        true,
+      )
+    </script>
   </body>
 </html>
