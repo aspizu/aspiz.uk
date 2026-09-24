@@ -43,16 +43,23 @@ const socialLinks = [
     label: "Instagram",
   },
 ]
+
+const half = Math.ceil(socialLinks.length / 2)
+const rows = [socialLinks.slice(0, half), socialLinks.slice(half)]
 ---
 
-<div class="mx-auto flex w-fit flex-wrap gap-2 [&_a:active]:translate-y-0.5">
-  {socialLinks.map(({href, label}, index) => (
-    <a class="block size-8" href={href} aria-label={label}>
-      <span
-        aria-hidden="true"
-        class="block size-8 bg-size-[416px_32px] bg-no-repeat [image-rendering:pixelated]"
-        style={`background-image: url(${socialIcons.src}); background-position: -${index * 32}px 0`}
-      />
-    </a>
+<div class="mx-auto flex w-fit flex-wrap justify-center gap-2 [&_a:active]:translate-y-0.5">
+  {rows.map((row, rowIndex) => (
+    <div class="flex gap-2">
+      {row.map(({href, label}, index) => (
+        <a class="block size-8" href={href} aria-label={label}>
+          <span
+            aria-hidden="true"
+            class="block size-8 bg-size-[416px_32px] bg-no-repeat [image-rendering:pixelated]"
+            style={`background-image: url(${socialIcons.src}); background-position: -${(rowIndex * half + index) * 32}px 0`}
+          />
+        </a>
+      ))}
+    </div>
   ))}
 </div>

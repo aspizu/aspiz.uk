@@ -11,14 +11,12 @@ const parentHref = pathname === "/" ? undefined : dirname(pathname)
   <nav aria-label="Parent page">
     <a
       aria-label="Parent"
-      class="no-underline hover:no-underline"
+      class="inline-flex items-center gap-1 no-underline hover:no-underline"
       href={parentHref}
       title="Parent"
     >
-      <span class="inline-flex items-center gap-1">
-        <CornerLeftUp class="size-4.5" aria-hidden="true" />
-        <span>Parent</span>
-      </span>
+      <CornerLeftUp class="size-4.5" aria-hidden="true" />
+      <span>Parent</span>
     </a>
   </nav>
 )}

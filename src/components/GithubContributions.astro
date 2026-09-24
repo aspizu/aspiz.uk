@@ -3,7 +3,7 @@
 // Renders nothing when no GITHUB_TOKEN is available or the request fails.
 import {execFileSync} from "node:child_process"
 
-import {format, parseISO} from "date-fns"
+import {parseISO} from "date-fns"
 
 type Day = {date: string; contributionCount: number; color: string}
 type Calendar = {totalContributions: number; weeks: {contributionDays: Day[]}[]}
@@ -17,19 +17,9 @@ const githubLevels: Record<string, number> = {
   "#216e39": 4,
 }
 
-// Every day renders as 4x4 pixels of 2x2 css px on a c64-light-blue square.
-// Levels step through full color or checkerboard dithering: blue, white dither,
-// white, light-green dither, light-green. The 4x4 checkers tile evenly across
-// neighboring blocks.
-const ditherLevels = [
-  ["....", "....", "....", "...."],
-  ["wbwb", "bwbw", "wbwb", "bwbw"],
-  ["wwww", "wwww", "wwww", "wwww"],
-  ["lwlw", "wlwl", "lwlw", "wlwl"],
-  ["llll", "llll", "llll", "llll"],
-]
-const pixelClasses = {w: "bg-c64-white", l: "bg-c64-light-green"} as const
-const pixelIndexes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+// Every day renders as one square. Levels step through full color or
+// checkerboard dithering: blue, white dither, white, light-green dither,
+// light-green. The checkers tile evenly across neighboring blocks.
 
 let calendar: Calendar | undefined
 
@@ -107,8 +97,13 @@ const grid: (Day | null)[][] = Array.from(
 if (grid[0].some((day) => day === null)) grid.shift()
 if (grid.at(-1)!.length < 7) grid.pop()
 
-const tooltip = (day: Day): string =>
-  `${day.contributionCount} contribution${day.contributionCount === 1 ? "" : "s"} on ${format(parseISO(day.date), "MMM do")}`
+const levelClasses = [
+  "bg-c64-light-blue",
+  "bg-size-[50%_50%] bg-[repeating-conic-gradient(var(--color-c64-light-blue)_0_25%,var(--color-c64-white)_0_50%)]",
+  "bg-c64-white",
+  "bg-size-[50%_50%] bg-[repeating-conic-gradient(var(--color-c64-white)_0_25%,var(--color-c64-light-green)_0_50%)]",
+  "bg-c64-light-green",
+] as const
 ---
 
 {calendar && (
@@ -121,19 +116,12 @@ const tooltip = (day: Day): string =>
       <div class="flex flex-col">
         {week.map((day) =>
           day ? (
-            <a
-              class="grid size-2 grid-cols-4 grid-rows-4 bg-c64-light-blue"
-              href="https://github.com/aspizu"
-              title={tooltip(day)}
-            >
-              {pixelIndexes.map((pixel) => {
-                const shade =
-                  ditherLevels[githubLevels[day.color] ?? 0][
-                    Math.floor(pixel / 4)
-                  ][pixel % 4]
-                return <span class={pixelClasses[shade]} />
-              })}
-            </a>
+            <span
+              class:list={[
+                "size-2",
+                levelClasses[githubLevels[day.color] ?? 0],
+              ]}
+            />
           ) : (
             <span class="size-2" />
           ),

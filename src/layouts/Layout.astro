@@ -51,6 +51,12 @@ const {description, title} = Astro.props
     <Umami />
     {description && <meta name="description" content={description} />}
     <title>{title}</title>
+    <script is:inline>
+      const originalTitle = document.title
+      document.addEventListener("visibilitychange", () => {
+        document.title = document.hidden ? "come back :(" : originalTitle
+      })
+    </script>
   </head>
   <body class="font-pizmono">
     <SidebarExpandButton />

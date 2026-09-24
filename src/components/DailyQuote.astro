@@ -1,30 +1,12 @@
----
-import quotes from "#content/quotes.json"
-import {z} from "astro/zod"
-
-const quoteSchema = z.object({
-  quote: z.string(),
-  author: z.string(),
-  source: z.string(),
-  sourceUrl: z.url().optional(),
-})
-const dailyQuotes = z.array(quoteSchema).nonempty().parse(quotes)
-const quote = dailyQuotes[0]
----
-
-<figure data-daily-quote>
+<figure data-daily-quote class="invisible">
   <blockquote>
-    <p class="m-0" data-quote-text>
-      {quote.quote}
-    </p>
-    <footer class="mt-2 text-right">
-      <span data-quote-author>{quote.author}</span>
-      <span data-quote-source-citation class:list={{hidden: !quote.sourceUrl}}>
+    <p class="m-0 min-h-[1lh]" data-quote-text />
+    <footer class="mt-2 min-h-[1lh] text-right">
+      <span data-quote-author />
+      <span data-quote-source-citation hidden>
         ,{" "}
         <cite>
-          <a data-quote-source href={quote.sourceUrl}>
-            {quote.source}
-          </a>
+          <a data-quote-source />
         </cite>
       </span>
     </footer>
@@ -62,7 +44,7 @@ const quote = dailyQuotes[0]
 
   const quote = dailyQuotes[(hash >>> 0) % dailyQuotes.length]
 
-  if (text && author && citation && source) {
+  if (text && author && citation && source && element) {
     text.textContent = quote.quote
     author.textContent = quote.author
     citation.classList.toggle("hidden", !quote.sourceUrl)
@@ -73,5 +55,7 @@ const quote = dailyQuotes[0]
     } else {
       source.removeAttribute("href")
     }
+
+    element.classList.remove("invisible")
   }
 </script>
