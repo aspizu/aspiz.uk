@@ -77,7 +77,7 @@ const {currentPath} = Astro.props
         desktopCollapsed,
       )
       openButton.setAttribute("aria-expanded", String(open))
-      sidebar.inert = mobileMedia.matches && !open
+      sidebar.inert = !open
       document.documentElement.classList.toggle(
         "overflow-hidden",
         mobileMedia.matches && open,
@@ -107,23 +107,41 @@ const {currentPath} = Astro.props
         openButton.focus()
       }
     })
-    mobileMedia.addEventListener("change", () =>
-      setSidebarOpen(!mobileMedia.matches),
-    )
+    const clearPeek = () => {
+      sidebar.removeAttribute("data-peek")
+      sidebar.inert = !sidebar.hasAttribute("data-open")
+    }
+    mobileMedia.addEventListener("change", () => {
+      if (mobileMedia.matches) {
+        setSidebarOpen(false)
+      } else {
+        setSidebarOpen(
+          storedOpen === null ? !isHomepage : storedOpen === "true",
+        )
+      }
+    })
     peekZone.addEventListener("mouseenter", () => {
       if (
         !mobileMedia.matches &&
         document.documentElement.hasAttribute("data-sidebar-collapsed")
       ) {
         sidebar.setAttribute("data-peek", "")
+        sidebar.inert = false
       }
     })
-    sidebar.addEventListener("mouseleave", () => {
-      sidebar.removeAttribute("data-peek")
+    peekZone.addEventListener("mouseleave", (event) => {
+      const bounds = sidebar.getBoundingClientRect()
+      if (
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right ||
+        event.clientY < bounds.top ||
+        event.clientY > bounds.bottom
+      ) {
+        clearPeek()
+      }
     })
-    document.documentElement.addEventListener("mouseleave", () => {
-      sidebar.removeAttribute("data-peek")
-    })
+    sidebar.addEventListener("mouseleave", clearPeek)
+    document.documentElement.addEventListener("mouseleave", clearPeek)
     const isHomepage = location.pathname.replace(/\/+$/, "") === ""
     setSidebarOpen(
       !mobileMedia.matches &&
