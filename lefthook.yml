@@ -14,6 +14,10 @@ pre-commit:
       glob: "*.{astro,cjs,cts,js,jsx,mjs,mts,ts,tsx}"
       run: pnpm exec oxlint {staged_files}
 
+    - name: tailwind-lint
+      glob: "*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"
+      run: pnpm exec tailwind-lint --config .tailwind-lint.css {staged_files}
+
 pre-push:
   jobs:
     - name: typecheck

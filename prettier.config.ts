@@ -1,0 +1,19 @@
+import type {Config} from "prettier"
+
+export default {
+  semi: false,
+  tabWidth: 2,
+  bracketSpacing: false,
+  printWidth: 80,
+  endOfLine: "lf",
+  plugins: ["prettier-plugin-astro", "prettier-plugin-tailwindcss"],
+  tailwindStylesheet: "./src/styles/main.css",
+  overrides: [
+    {
+      files: "*.astro",
+      options: {
+        parser: "astro",
+      },
+    },
+  ],
+} satisfies Config
