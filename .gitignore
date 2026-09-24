@@ -6,3 +6,4 @@
 /.wrangler/
 worker-configuration.d.ts
 .dev.vars*
+.DS_Store
