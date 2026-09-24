@@ -12,6 +12,8 @@
 @source not "../utils";
 @source not "../worker.ts";
 
+@custom-variant sidebar-collapsed (html[data-sidebar-collapsed] &);
+
 @import "./theme.css";
 @import "./base.css";
 @import "./markdown.css";
